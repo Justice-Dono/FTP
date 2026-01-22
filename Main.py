@@ -128,36 +128,64 @@ def move_up():
 
 #This function moves the turtle down, while checking the bounds of the turtle.
 def move_up():
-    global cursor_row
-    if cursor_row > 0:
-        cursor_row -= 1
-        x, y = tile_to_screen(cursor_row, cursor_col)
-        global_cursor.goto(x, y)
-        global_cursor.setheading(90)
+	global cursor_row
+	if cursor_row > 0:
+		cursor_row -= 1
+		x, y = tile_to_screen(cursor_row, cursor_col)
+		global_cursor.goto(x, y)
+		global_cursor.setheading(90)
+		return
+	if cursor_row == 0:
+		cursor_row = 9	
+		x, y = tile_to_screen(cursor_row, cursor_col)
+		global_cursor.goto(x, y)
+		global_cursor.setheading(90)
+		return
 
 def move_down():
-    global cursor_row
-    if cursor_row < GRID_ROWS - 1:
-        cursor_row += 1
-        x, y = tile_to_screen(cursor_row, cursor_col)
-        global_cursor.goto(x, y)
-        global_cursor.setheading(270)
-
+	global cursor_row
+	if cursor_row < GRID_ROWS - 1:
+		cursor_row += 1
+		x, y = tile_to_screen(cursor_row, cursor_col)
+		global_cursor.goto(x, y)
+		global_cursor.setheading(270)
+		return
+	if cursor_row == 9:
+		cursor_row = 0	
+		x, y = tile_to_screen(cursor_row, cursor_col)
+		global_cursor.goto(x, y)
+		global_cursor.setheading(270)
+		return
+	
 def move_left():
-    global cursor_col
-    if cursor_col > 0:
-        cursor_col -= 1
-        x, y = tile_to_screen(cursor_row, cursor_col)
-        global_cursor.goto(x, y)
-        global_cursor.setheading(180)
-
+	global cursor_col
+	if cursor_col > 0:
+		cursor_col -= 1
+		x, y = tile_to_screen(cursor_row, cursor_col)
+		global_cursor.goto(x, y)
+		global_cursor.setheading(180)
+		return
+	if cursor_col == 0:
+		cursor_col = 9	
+		x, y = tile_to_screen(cursor_row, cursor_col)
+		global_cursor.goto(x, y)
+		global_cursor.setheading(180)
+		return
+	
 def move_right():
-    global cursor_col
-    if cursor_col < GRID_COLS - 1:
-        cursor_col += 1
-        x, y = tile_to_screen(cursor_row, cursor_col)
-        global_cursor.goto(x, y)
-        global_cursor.setheading(0)
+	global cursor_col
+	if cursor_col < GRID_COLS - 1:
+		cursor_col += 1
+		x, y = tile_to_screen(cursor_row, cursor_col)
+		global_cursor.goto(x, y)
+		global_cursor.setheading(0)
+		return
+	if cursor_col == 9:
+		cursor_col = 0
+		x, y = tile_to_screen(cursor_row, cursor_col)
+		global_cursor.goto(x, y)
+		global_cursor.setheading(0)
+		return
 
 #This function gets the return value and sets it into the combat return variable.
 def enter():
