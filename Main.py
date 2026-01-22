@@ -249,7 +249,9 @@ def main():
 	window = turtle.Screen()
 	window.setup(600,600)
 	window.title("Combat Window")
+	window.tracer(0)
 	draw_grid()
+	window.update()
 	#We create the cursor turtle.
 	cursor = turtle.Turtle()
 	cursor.penup()
