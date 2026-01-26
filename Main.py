@@ -128,37 +128,40 @@ def window_active(window):
 		return False
 	
 
-#This function moves the turtle up, while checking the bounds of the turtle.
-def move_up():
-	global global_cursor
-	global_cursor.sety(global_cursor.ycor() + distance)
-	global_cursor.setheading(90)
-
 
 #This function moves the turtle down, while checking the bounds of the turtle.
 def move_up():
-    global camera_row
-    camera_row -= 1
-    draw_grid()
-    turtle.update()
+	global camera_row
+	global global_cursor
+	camera_row -= 1
+	draw_grid()
+	global_cursor.setheading(90)
+	turtle.update()
 
 def move_down():
-    global camera_row
-    camera_row += 1
-    draw_grid()
-    turtle.update()
+	global camera_row
+	global global_cursor
+	camera_row += 1
+	draw_grid()
+	global_cursor.setheading(270)
+	turtle.update()
 
 def move_left():
-    global camera_col
-    camera_col -= 1
-    draw_grid()
-    turtle.update()
+	global camera_col
+	global global_cursor
+	camera_col -= 1
+	draw_grid()
+	global_cursor.setheading(180)
+	turtle.update()
 
 def move_right():
-    global camera_col
-    camera_col += 1
-    draw_grid()
-    turtle.update()
+	global camera_col
+	global global_cursor
+	camera_col += 1
+	draw_grid()
+	global_cursor.setheading(0)
+	turtle.update()
+
 #This function gets the return value and sets it into the combat return variable.
 def enter():
 	print("Player hit enter!")
