@@ -133,14 +133,23 @@ def window_active(window):
 def move_up():
 	global camera_row
 	global global_cursor
+	if camera_row == 0:
+		global_cursor.setheading(90)
+		turtle.update()
+		return
 	camera_row -= 1
 	draw_grid()
 	global_cursor.setheading(90)
 	turtle.update()
+	
 
 def move_down():
 	global camera_row
 	global global_cursor
+	if camera_row >= (GRID_ROWS - 1):
+		global_cursor.setheading(270)
+		turtle.update()
+		return
 	camera_row += 1
 	draw_grid()
 	global_cursor.setheading(270)
@@ -149,6 +158,10 @@ def move_down():
 def move_left():
 	global camera_col
 	global global_cursor
+	if camera_col == 0:
+		global_cursor.setheading(180)
+		turtle.update()
+		return
 	camera_col -= 1
 	draw_grid()
 	global_cursor.setheading(180)
@@ -157,6 +170,10 @@ def move_left():
 def move_right():
 	global camera_col
 	global global_cursor
+	if camera_col >= (GRID_COLS - 1):
+		global_cursor.setheading(0)
+		turtle.update()
+		return
 	camera_col += 1
 	draw_grid()
 	global_cursor.setheading(0)
