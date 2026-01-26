@@ -17,12 +17,21 @@ global cursor_col
 cursor_col = 0 
 distance = 20
 
+global camera_row
+camera_row = 0
+global camera_col
+camera_col = 0
+
 TILE_SIZE = 40
 GRID_ROWS = 10
 GRID_COLS = 10
 
 GRID_ORIGIN_X = -200
 GRID_ORIGIN_Y = 200
+SCREEN_CENTER_X = 0
+SCREEN_CENTER_Y = 0
+global pen
+pen = None
 
 #Class for the hero object. Probably could be made as a subclass of a larger character class.
 class Hero:
@@ -128,65 +137,28 @@ def move_up():
 
 #This function moves the turtle down, while checking the bounds of the turtle.
 def move_up():
-	global cursor_row
-	if cursor_row > 0:
-		cursor_row -= 1
-		x, y = tile_to_screen(cursor_row, cursor_col)
-		global_cursor.goto(x, y)
-		global_cursor.setheading(90)
-		return
-	if cursor_row == 0:
-		cursor_row = 9	
-		x, y = tile_to_screen(cursor_row, cursor_col)
-		global_cursor.goto(x, y)
-		global_cursor.setheading(90)
-		return
+    global camera_row
+    camera_row -= 1
+    draw_grid()
+    turtle.update()
 
 def move_down():
-	global cursor_row
-	if cursor_row < GRID_ROWS - 1:
-		cursor_row += 1
-		x, y = tile_to_screen(cursor_row, cursor_col)
-		global_cursor.goto(x, y)
-		global_cursor.setheading(270)
-		return
-	if cursor_row == 9:
-		cursor_row = 0	
-		x, y = tile_to_screen(cursor_row, cursor_col)
-		global_cursor.goto(x, y)
-		global_cursor.setheading(270)
-		return
-	
-def move_left():
-	global cursor_col
-	if cursor_col > 0:
-		cursor_col -= 1
-		x, y = tile_to_screen(cursor_row, cursor_col)
-		global_cursor.goto(x, y)
-		global_cursor.setheading(180)
-		return
-	if cursor_col == 0:
-		cursor_col = 9	
-		x, y = tile_to_screen(cursor_row, cursor_col)
-		global_cursor.goto(x, y)
-		global_cursor.setheading(180)
-		return
-	
-def move_right():
-	global cursor_col
-	if cursor_col < GRID_COLS - 1:
-		cursor_col += 1
-		x, y = tile_to_screen(cursor_row, cursor_col)
-		global_cursor.goto(x, y)
-		global_cursor.setheading(0)
-		return
-	if cursor_col == 9:
-		cursor_col = 0
-		x, y = tile_to_screen(cursor_row, cursor_col)
-		global_cursor.goto(x, y)
-		global_cursor.setheading(0)
-		return
+    global camera_row
+    camera_row += 1
+    draw_grid()
+    turtle.update()
 
+def move_left():
+    global camera_col
+    camera_col -= 1
+    draw_grid()
+    turtle.update()
+
+def move_right():
+    global camera_col
+    camera_col += 1
+    draw_grid()
+    turtle.update()
 #This function gets the return value and sets it into the combat return variable.
 def enter():
 	print("Player hit enter!")
@@ -246,38 +218,40 @@ def attack(hero, enemy, attacker, defense):
 		return damage
 	
 def draw_grid():
-    pen = turtle.Turtle()
-    pen.hideturtle()
-    pen.speed(0)
-    pen.penup()
+	global pen
+	pen.clear()
+	for row in range(GRID_ROWS):
+		for col in range(GRID_COLS):
+			x, y = tile_to_screen(row, col)
 
-    for row in range(GRID_ROWS):
-        for col in range(GRID_COLS):
-            x = GRID_ORIGIN_X + col * TILE_SIZE
-            y = GRID_ORIGIN_Y - row * TILE_SIZE
-
-            pen.goto(x, y)
-            pen.pendown()
-            for _ in range(4):
-                pen.forward(TILE_SIZE)
-                pen.right(90)
-            pen.penup()
+			pen.goto(x - TILE_SIZE / 2, y + TILE_SIZE / 2)
+			pen.pendown()
+			for _ in range(4):
+				pen.forward(TILE_SIZE)
+				pen.right(90)
+			pen.penup()
 
 def tile_to_screen(row, col):
-    x = GRID_ORIGIN_X + col * TILE_SIZE + TILE_SIZE / 2
-    y = GRID_ORIGIN_Y - row * TILE_SIZE - TILE_SIZE / 2
-    return x, y
+    dx = (col - camera_col) * TILE_SIZE
+    dy = (camera_row - row) * TILE_SIZE
+    return SCREEN_CENTER_X + dx, SCREEN_CENTER_Y + dy
 
 #This is the main function where the combat logic happens.
 def main():
 	#We initalise the global variables.
 	global global_cursor
+	global pen
 	game_font = "PressStart2P"
 	#We create the window for the game screen.
 	window = turtle.Screen()
 	window.setup(600,600)
 	window.title("Combat Window")
 	window.tracer(0)
+	local_pen = turtle.Turtle()
+	local_pen.hideturtle()
+	local_pen.speed(0)
+	local_pen.penup()
+	pen = local_pen
 	draw_grid()
 	window.update()
 	#We create the cursor turtle.
@@ -295,7 +269,7 @@ def main():
 	global cursor_row, cursor_col
 	cursor_row = 0
 	cursor_col = 0
-	x, y = tile_to_screen(cursor_row, cursor_col)
+	x, y = tile_to_screen(camera_row, camera_col)
 	cursor.goto(x, y)
 	#We move the cursor to the starting combat position.
 	#move(cursor, global_index, COMBAT_POSITIONS)
