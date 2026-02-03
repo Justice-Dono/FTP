@@ -143,6 +143,16 @@ def get_tile(row, col):
 	print(tile_col)
 	return tile_col
 	
+def combat_chance(tile):
+	combat = False
+	floor = 0
+	if tile == 2:
+		floor = 2
+	roll = random.randrange(floor,8)
+	if roll > 4:
+		combat = True
+	return combat
+
 #This function moves the turtle down, while checking the bounds of the turtle.
 def move_up():
 	global camera_row
@@ -161,6 +171,8 @@ def move_up():
 	draw_grid()
 	global_cursor.setheading(90)
 	turtle.update()
+	chance = combat_chance(tile)
+	print(chance)
 	
 
 def move_down():
@@ -180,6 +192,8 @@ def move_down():
 	draw_grid()
 	global_cursor.setheading(270)
 	turtle.update()
+	chance = combat_chance(tile)
+	print(chance)
 
 def move_left():
 	global camera_row
@@ -198,6 +212,8 @@ def move_left():
 	draw_grid()
 	global_cursor.setheading(180)
 	turtle.update()
+	chance = combat_chance(tile)
+	print(chance)
 
 def move_right():
 	global camera_row
@@ -216,6 +232,8 @@ def move_right():
 	draw_grid()
 	global_cursor.setheading(0)
 	turtle.update()
+	chance = combat_chance(tile)
+	print(chance)
 
 def load_map(filename):
     global tile_map, map_rows, map_cols
