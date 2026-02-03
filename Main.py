@@ -3,6 +3,7 @@ import tkinter as tk
 import time
 import random
 import math
+import csv
 
 #This is the cursor turtle used for selecting actions.
 global global_cursor
@@ -22,9 +23,10 @@ camera_row = 0
 global camera_col
 camera_col = 0
 
-TILE_SIZE = 40
-GRID_ROWS = 10
-GRID_COLS = 10
+TILE_SIZE = 100
+tile_map = []
+map_rows = 0
+map_cols = 0
 
 GRID_ORIGIN_X = -200
 GRID_ORIGIN_Y = 200
@@ -32,6 +34,12 @@ SCREEN_CENTER_X = 0
 SCREEN_CENTER_Y = 0
 global pen
 pen = None
+
+TILE_COLORS = {
+    0: "lightgray",   # floor
+    1: "dimgray",     # wall
+    2: "royalblue"    # water
+}
 
 #Class for the hero object. Probably could be made as a subclass of a larger character class.
 class Hero:
@@ -146,7 +154,7 @@ def move_up():
 def move_down():
 	global camera_row
 	global global_cursor
-	if camera_row >= (GRID_ROWS - 1):
+	if camera_row >= (map_rows - 1):
 		global_cursor.setheading(270)
 		turtle.update()
 		return
@@ -170,7 +178,7 @@ def move_left():
 def move_right():
 	global camera_col
 	global global_cursor
-	if camera_col >= (GRID_COLS - 1):
+	if camera_col >= (map_cols - 1):
 		global_cursor.setheading(0)
 		turtle.update()
 		return
@@ -178,6 +186,18 @@ def move_right():
 	draw_grid()
 	global_cursor.setheading(0)
 	turtle.update()
+
+def load_map(filename):
+    global tile_map, map_rows, map_cols
+
+    tile_map = []
+    with open(filename, newline='') as csvfile:
+        reader = csv.reader(csvfile)
+        for row in reader:
+            tile_map.append([int(cell) for cell in row])
+
+    map_rows = len(tile_map)
+    map_cols = len(tile_map[0])
 
 #This function gets the return value and sets it into the combat return variable.
 def enter():
@@ -238,18 +258,27 @@ def attack(hero, enemy, attacker, defense):
 		return damage
 	
 def draw_grid():
-	global pen
-	pen.clear()
-	for row in range(GRID_ROWS):
-		for col in range(GRID_COLS):
-			x, y = tile_to_screen(row, col)
+    global pen
+    pen.clear()
+    for row in range(map_rows):
+        for col in range(map_cols):
+            tile_value = tile_map[row][col]
+            color = TILE_COLORS.get(tile_value, "pink")  # fallback
 
-			pen.goto(x - TILE_SIZE / 2, y + TILE_SIZE / 2)
-			pen.pendown()
-			for _ in range(4):
-				pen.forward(TILE_SIZE)
-				pen.right(90)
-			pen.penup()
+            x, y = tile_to_screen(row, col)
+
+            pen.goto(x - TILE_SIZE / 2, y + TILE_SIZE / 2)
+            pen.fillcolor(color)
+            pen.pencolor("black")
+            pen.pendown()
+            pen.begin_fill()
+
+            for _ in range(4):
+                pen.forward(TILE_SIZE)
+                pen.right(90)
+
+            pen.end_fill()
+            pen.penup()
 
 def tile_to_screen(row, col):
     dx = (col - camera_col) * TILE_SIZE
@@ -262,6 +291,7 @@ def main():
 	global global_cursor
 	global pen
 	game_font = "PressStart2P"
+	load_map("map.csv")
 	#We create the window for the game screen.
 	window = turtle.Screen()
 	window.setup(600,600)
@@ -277,14 +307,7 @@ def main():
 	#We create the cursor turtle.
 	cursor = turtle.Turtle()
 	cursor.penup()
-	#We create turtles for text and the enemy model.
-	#text_turtle= create_turtle(window, "Images/combat-text.gif")
-	#text_turtle.teleport(-200,-200)
-	#We get the location of the text turtle.
-	#text_x = text_turtle.xcor()
-	#text_y = text_turtle.ycor()
-	#We create an array of combat positions based on the text turtle.
-	#COMBAT_POSITIONS = [(text_x-70,text_y+33),(text_x-70, text_y+11.5),(text_x -70, text_y-11),(text_x-70,text_y-34)]
+	
 	global_cursor = cursor
 	global cursor_row, cursor_col
 	cursor_row = 0
