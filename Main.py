@@ -136,12 +136,24 @@ def window_active(window):
 		return False
 	
 
-
+def get_tile(row, col):
+	global tile_map
+	tile_row = tile_map[row]
+	tile_col = tile_row[col]
+	print(tile_col)
+	return tile_col
+	
 #This function moves the turtle down, while checking the bounds of the turtle.
 def move_up():
 	global camera_row
+	global camera_col
 	global global_cursor
 	if camera_row == 0:
+		global_cursor.setheading(90)
+		turtle.update()
+		return
+	tile = get_tile(camera_row - 1,camera_col)
+	if tile == 1:
 		global_cursor.setheading(90)
 		turtle.update()
 		return
@@ -153,8 +165,14 @@ def move_up():
 
 def move_down():
 	global camera_row
+	global camera_col
 	global global_cursor
 	if camera_row >= (map_rows - 1):
+		global_cursor.setheading(270)
+		turtle.update()
+		return
+	tile = get_tile(camera_row + 1, camera_col)
+	if tile == 1:
 		global_cursor.setheading(270)
 		turtle.update()
 		return
@@ -164,9 +182,15 @@ def move_down():
 	turtle.update()
 
 def move_left():
+	global camera_row
 	global camera_col
 	global global_cursor
 	if camera_col == 0:
+		global_cursor.setheading(180)
+		turtle.update()
+		return
+	tile = get_tile(camera_row, camera_col - 1)
+	if tile == 1:
 		global_cursor.setheading(180)
 		turtle.update()
 		return
@@ -176,9 +200,15 @@ def move_left():
 	turtle.update()
 
 def move_right():
+	global camera_row
 	global camera_col
 	global global_cursor
 	if camera_col >= (map_cols - 1):
+		global_cursor.setheading(0)
+		turtle.update()
+		return
+	tile = get_tile(camera_row, camera_col + 1)
+	if tile == 1:
 		global_cursor.setheading(0)
 		turtle.update()
 		return
