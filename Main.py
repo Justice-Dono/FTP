@@ -12,33 +12,36 @@ global_cursor = None
 #This keeps track of the correct action.
 global global_index
 global_index = 0
+#The clobal cursor keeps track of where the character is located
 global cursor_row 
 cursor_row = 0
 global cursor_col
 cursor_col = 0 
 distance = 20
 
+#Row for the game's camera.
 global camera_row
 camera_row = 0
 global camera_col
 camera_col = 0
 
+#Shows the maximum size of the tiles, and the map the tiles live in.
 TILE_SIZE = 100
 tile_map = []
 map_rows = 0
 map_cols = 0
 
-GRID_ORIGIN_X = -200
-GRID_ORIGIN_Y = 200
+#This creates the origin of the grid.
 SCREEN_CENTER_X = 0
 SCREEN_CENTER_Y = 0
 global pen
 pen = None
 
+#The set of tile colours, 0 for normal ground, 1 for walls, and 2 for water.
 TILE_COLORS = {
-    0: "lightgray",   # floor
-    1: "dimgray",     # wall
-    2: "royalblue"    # water
+    0: "lightgray",  
+    1: "dimgray",     
+    2: "royalblue"    
 }
 
 #Class for the hero object. Probably could be made as a subclass of a larger character class.
@@ -135,38 +138,46 @@ def window_active(window):
 		#Otherwise, we return false.
 		return False
 	
-
+#This function gets the tile from the tile_map, and returns it's type.
 def get_tile(row, col):
 	global tile_map
+	#We get the tile's row and column
 	tile_row = tile_map[row]
 	tile_col = tile_row[col]
-	print(tile_col)
+	#print(tile_col)
+	#We return the tile's column.
 	return tile_col
 	
+#This function determines the chance of a player getting an encounter on a specific move.
 def combat_chance(tile):
 	combat = False
 	floor = 0
+	#If the tile is a water tile, the chance of an encounter is higher.
 	if tile == 2:
 		floor = 2
 	roll = random.randrange(floor,8)
 	if roll > 4:
+		#If the number is 5 or higher, we trigger combat.
 		combat = True
 	return combat
 
-#This function moves the turtle down, while checking the bounds of the turtle.
+#This function scrolls the world down, giving the effect that the turtle has moved up.
 def move_up():
 	global camera_row
 	global camera_col
 	global global_cursor
+	#If we are in the first row, we don't move the world but change the facing angle of the turtle.
 	if camera_row == 0:
 		global_cursor.setheading(90)
 		turtle.update()
 		return
 	tile = get_tile(camera_row - 1,camera_col)
+	#If the tile is a wall, we make it so the user cannot move, and we update the heading of the turtle.
 	if tile == 1:
 		global_cursor.setheading(90)
 		turtle.update()
 		return
+	#We subtract one from the camera row, update the heading, and print the chance.
 	camera_row -= 1
 	draw_grid()
 	global_cursor.setheading(90)
@@ -174,20 +185,23 @@ def move_up():
 	chance = combat_chance(tile)
 	print(chance)
 	
-
+#This function moves the world up, giving the illusion that the turtle has moved down.
 def move_down():
 	global camera_row
 	global camera_col
 	global global_cursor
+	#If the camera is at the edge of the grid, change the turtle's facing angle.
 	if camera_row >= (map_rows - 1):
 		global_cursor.setheading(270)
 		turtle.update()
 		return
+	#If the turtle attempts to move to a wall tile, we update the turtle's facing angle.
 	tile = get_tile(camera_row + 1, camera_col)
 	if tile == 1:
 		global_cursor.setheading(270)
 		turtle.update()
 		return
+	#Otherwise, we move the camera and roll for combat.
 	camera_row += 1
 	draw_grid()
 	global_cursor.setheading(270)
@@ -195,19 +209,23 @@ def move_down():
 	chance = combat_chance(tile)
 	print(chance)
 
+#This function moves the world right, giving the illusion that the turtle has moved.
 def move_left():
 	global camera_row
 	global camera_col
 	global global_cursor
+	#If the camera is at the edge of the map, we update the turtle's facing.
 	if camera_col == 0:
 		global_cursor.setheading(180)
 		turtle.update()
 		return
+	#If the turtle is going to move into the wall, we update the turtle's facing.
 	tile = get_tile(camera_row, camera_col - 1)
 	if tile == 1:
 		global_cursor.setheading(180)
 		turtle.update()
 		return
+	#We move the turtle and update it's facing.
 	camera_col -= 1
 	draw_grid()
 	global_cursor.setheading(180)
@@ -215,19 +233,23 @@ def move_left():
 	chance = combat_chance(tile)
 	print(chance)
 
+#We move the world left to give the illusion that the turtle is moving.
 def move_right():
 	global camera_row
 	global camera_col
 	global global_cursor
+	#If the camera is at the edge of the world, we update the turtle's facing angle.
 	if camera_col >= (map_cols - 1):
 		global_cursor.setheading(0)
 		turtle.update()
 		return
+	#If the turtle attempts to move to a wall tile, we update the facing angele.
 	tile = get_tile(camera_row, camera_col + 1)
 	if tile == 1:
 		global_cursor.setheading(0)
 		turtle.update()
 		return
+	#Otherwise, we move the turtle.
 	camera_col += 1
 	draw_grid()
 	global_cursor.setheading(0)
@@ -235,15 +257,17 @@ def move_right():
 	chance = combat_chance(tile)
 	print(chance)
 
+#This function loads the map.
 def load_map(filename):
     global tile_map, map_rows, map_cols
 
     tile_map = []
+	#For each line, we loop through to create the tiles.
     with open(filename, newline='') as csvfile:
         reader = csv.reader(csvfile)
         for row in reader:
             tile_map.append([int(cell) for cell in row])
-
+	#We save the map row and map columns.
     map_rows = len(tile_map)
     map_cols = len(tile_map[0])
 
@@ -304,17 +328,20 @@ def attack(hero, enemy, attacker, defense):
 		ending_hp = hero.get_hp()
 		damage = abs(ending_hp - starting_hp)
 		return damage
-	
+
+#This funciton redraws the world after every move.
 def draw_grid():
     global pen
     pen.clear()
     for row in range(map_rows):
+		#We draw the tiles one tile at a time in each row.
         for col in range(map_cols):
             tile_value = tile_map[row][col]
-            color = TILE_COLORS.get(tile_value, "pink")  # fallback
+			#If we cannot get the tile, we create a pink error tile.
+            color = TILE_COLORS.get(tile_value, "pink")  
 
             x, y = tile_to_screen(row, col)
-
+			#The pen draws the tile.
             pen.goto(x - TILE_SIZE / 2, y + TILE_SIZE / 2)
             pen.fillcolor(color)
             pen.pencolor("black")
@@ -328,17 +355,18 @@ def draw_grid():
             pen.end_fill()
             pen.penup()
 
+#This function gets the tile in relation to where it is on the screen.
 def tile_to_screen(row, col):
     dx = (col - camera_col) * TILE_SIZE
     dy = (camera_row - row) * TILE_SIZE
     return SCREEN_CENTER_X + dx, SCREEN_CENTER_Y + dy
 
-#This is the main function where the combat logic happens.
+#This is the main function where the movement logic happens.
 def main():
 	#We initalise the global variables.
 	global global_cursor
 	global pen
-	game_font = "PressStart2P"
+	#game_font = "PressStart2P"
 	load_map("map.csv")
 	#We create the window for the game screen.
 	window = turtle.Screen()
