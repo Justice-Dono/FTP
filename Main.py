@@ -10,6 +10,8 @@ global global_cursor
 global_cursor = None
 global main_hero 
 global combat_cursor
+global COMBAT_POSITIONS
+COMBAT_POSITIONS = None
 combat_cursor = None
 main_hero = None
 #This keeps track of the correct action.
@@ -172,6 +174,29 @@ def move(turtle, index, pos):
 	#We get the position, then teleport the turtle to the next position.
 	local_position = pos[index]
 	turtle.teleport(local_position[0],local_position[1])
+def combat_up():
+	global global_index
+	print("We are in combat!")
+	if STATE != "combat":
+		return
+	if global_index == 0:
+		global_index = 3
+		return
+	global_index = (global_index - 1)
+	move(combat_cursor, global_index, COMBAT_POSITIONS)
+	game_window.update()
+
+def combat_down():
+	global global_index
+	if STATE != "combat":
+		return
+	if global_index == 3:
+		global_index = 0
+		return
+	global_index = (global_index + 1)
+	move(combat_cursor, global_index, COMBAT_POSITIONS)
+	game_window.update()
+
 
 #This function scrolls the world down, giving the effect that the turtle has moved up.
 def move_up():
@@ -373,7 +398,7 @@ def attack(hero, enemy, attacker, defense):
 
 def run_combat(window, hero):
 	global STATE
-	global global_cursor, global_index, combat_return, combat_cursor
+	global global_cursor, global_index, combat_return, combat_cursor, COMBAT_POSITIONS
 
 	STATE = "combat"
 	pen.clear()
@@ -383,9 +408,11 @@ def run_combat(window, hero):
 		global combat_return
 		combat_return = value
 		
-	window.onkey(lambda: set_combat("a"), "a")
-	window.onkey(lambda: set_combat("d"), "d")
-	window.onkey(lambda: set_combat("r"), "r")
+	window.onkey(combat_up, "Up")
+	window.onkey(combat_down, "Down")
+	window.onkey(lambda: set_combat("a"), "Return")
+	window.onkey(lambda: set_combat("r"), "Escape")
+
 	global_index = 0
 	combat_return = "e"
 
@@ -409,7 +436,7 @@ def run_combat(window, hero):
 	    (text_x - 70, text_y - 34)
 	]
 
-	move(combat_cursor, global_index, COMBAT_POSITIONS)
+	#move(combat_cursor, global_index, COMBAT_POSITIONS)
 
 	update_turtle = turtle.Turtle()
 	update_turtle.penup()
@@ -426,29 +453,35 @@ def run_combat(window, hero):
 
 	def combat_step():
 		global combat_return, STATE
-
+		window.update()
 		if STATE != "combat":
 			return
 
 		if combat_return == "a":
-			attack(hero, monster, "p", monster_defense)
-			combat_return = "e"
+			if global_index == 0 :
+				attack(hero, monster, "p", monster_defense)
 
-		elif combat_return == "d":
-			combat_return = "e"
+			elif global_index == "1":
+				hero_defense = True
+				combat_return = "e"
 
-		elif combat_return == "r":
-			end_combat()
-			return
-
+			elif global_index == "2":
+				pass
+			
+			elif global_index == "3":
+				end_combat()
+				return
+		combat_return = "e"
+		print(monster.get_hp())
 		if monster.get_hp() <= 0:
 			end_combat()
 			return
-
+		window.update()
 		window.ontimer(combat_step, 100)
 
 
 	window.ontimer(combat_step, 100)
+	window.update()
 	return
 
 
@@ -459,6 +492,10 @@ def end_combat():
 	global_cursor.showturtle()
 	draw_grid()
 	turtle.update()
+	game_window.onkey(move_up, "Up")
+	game_window.onkey(move_down, "Down")
+	game_window.onkey(move_left, "Left")
+	game_window.onkey(move_right, "Right")
 
 #This funciton redraws the world after every move.
 def draw_grid():
@@ -501,6 +538,8 @@ def main():
 	global game_window
 	global main_hero
 	global STATE
+	global COMBAT_POSITIONS
+	COMBAT_POSITIONS = [(100,200),(150,250),(200,300),(250,350)]
 	STATE = "explore"
 	#game_font = "PressStart2P"
 	load_map("map.csv")
