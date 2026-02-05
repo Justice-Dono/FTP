@@ -8,7 +8,10 @@ import csv
 #This is the cursor turtle used for selecting actions.
 global global_cursor
 global_cursor = None
-
+global main_hero 
+global combat_cursor
+combat_cursor = None
+main_hero = None
 #This keeps track of the correct action.
 global global_index
 global_index = 0
@@ -18,12 +21,14 @@ cursor_row = 0
 global cursor_col
 cursor_col = 0 
 distance = 20
-
 #Row for the game's camera.
 global camera_row
 camera_row = 0
 global camera_col
 camera_col = 0
+
+global game_window
+game_window = None
 
 #Shows the maximum size of the tiles, and the map the tiles live in.
 TILE_SIZE = 100
@@ -37,6 +42,8 @@ SCREEN_CENTER_Y = 0
 global pen
 pen = None
 
+global STATE
+STATE = None
 #The set of tile colours, 0 for normal ground, 1 for walls, and 2 for water.
 TILE_COLORS = {
     0: "lightgray",  
@@ -161,11 +168,21 @@ def combat_chance(tile):
 		combat = True
 	return combat
 
+def move(turtle, index, pos):
+	#We get the position, then teleport the turtle to the next position.
+	local_position = pos[index]
+	turtle.teleport(local_position[0],local_position[1])
+
 #This function scrolls the world down, giving the effect that the turtle has moved up.
 def move_up():
+	global STATE
+	if STATE != "explore":
+		return
 	global camera_row
 	global camera_col
 	global global_cursor
+	global game_window
+	global main_hero
 	#If we are in the first row, we don't move the world but change the facing angle of the turtle.
 	if camera_row == 0:
 		global_cursor.setheading(90)
@@ -183,13 +200,21 @@ def move_up():
 	global_cursor.setheading(90)
 	turtle.update()
 	chance = combat_chance(tile)
+	if chance :
+		run_combat(game_window, main_hero)
 	print(chance)
-	
+	return
+
 #This function moves the world up, giving the illusion that the turtle has moved down.
 def move_down():
+	global STATE
+	if STATE != "explore":
+		return
 	global camera_row
 	global camera_col
 	global global_cursor
+	global game_window
+	global main_hero
 	#If the camera is at the edge of the grid, change the turtle's facing angle.
 	if camera_row >= (map_rows - 1):
 		global_cursor.setheading(270)
@@ -208,12 +233,20 @@ def move_down():
 	turtle.update()
 	chance = combat_chance(tile)
 	print(chance)
+	if chance:
+		run_combat(game_window, main_hero)
+	return
 
 #This function moves the world right, giving the illusion that the turtle has moved.
 def move_left():
+	global STATE
+	if STATE != "explore":
+		return
 	global camera_row
 	global camera_col
 	global global_cursor
+	global game_window
+	global main_hero
 	#If the camera is at the edge of the map, we update the turtle's facing.
 	if camera_col == 0:
 		global_cursor.setheading(180)
@@ -232,9 +265,15 @@ def move_left():
 	turtle.update()
 	chance = combat_chance(tile)
 	print(chance)
+	if chance:
+		run_combat(game_window, main_hero)
+	return
 
 #We move the world left to give the illusion that the turtle is moving.
 def move_right():
+	global STATE
+	if STATE != "explore":
+		return
 	global camera_row
 	global camera_col
 	global global_cursor
@@ -256,6 +295,9 @@ def move_right():
 	turtle.update()
 	chance = combat_chance(tile)
 	print(chance)
+	if chance:
+		run_combat(game_window, main_hero)
+	return
 
 #This function loads the map.
 def load_map(filename):
@@ -329,6 +371,95 @@ def attack(hero, enemy, attacker, defense):
 		damage = abs(ending_hp - starting_hp)
 		return damage
 
+def run_combat(window, hero):
+	global STATE
+	global global_cursor, global_index, combat_return, combat_cursor
+
+	STATE = "combat"
+	pen.clear()
+	global_cursor.hideturtle()
+	turtle.update()
+	def set_combat(value):
+		global combat_return
+		combat_return = value
+		
+	window.onkey(lambda: set_combat("a"), "a")
+	window.onkey(lambda: set_combat("d"), "d")
+	window.onkey(lambda: set_combat("r"), "r")
+	global_index = 0
+	combat_return = "e"
+
+	cursor = turtle.Turtle()
+	cursor.penup()
+	combat_cursor = cursor
+
+	text_turtle = create_turtle(window, "Images/combat-text.gif")
+	text_turtle.teleport(-200, -200)
+
+	enemy_turtle = create_turtle(window, "Images/Slime.gif")
+	enemy_turtle.penup()
+
+	text_x = text_turtle.xcor()
+	text_y = text_turtle.ycor()
+
+	COMBAT_POSITIONS = [
+	    (text_x - 70, text_y + 33),
+	    (text_x - 70, text_y + 11.5),
+	    (text_x - 70, text_y - 11),
+	    (text_x - 70, text_y - 34)
+	]
+
+	move(combat_cursor, global_index, COMBAT_POSITIONS)
+
+	update_turtle = turtle.Turtle()
+	update_turtle.penup()
+	update_turtle.hideturtle()
+	update_turtle.goto(100, -100)
+
+	monster = Monster("Slime", 3, 1, 1, 2, 6, 3)
+
+	hero_defense = False
+	monster_defense = False
+
+	window.listen()
+	window.onkey(enter, "Return")
+
+	def combat_step():
+		global combat_return, STATE
+
+		if STATE != "combat":
+			return
+
+		if combat_return == "a":
+			attack(hero, monster, "p", monster_defense)
+			combat_return = "e"
+
+		elif combat_return == "d":
+			combat_return = "e"
+
+		elif combat_return == "r":
+			end_combat()
+			return
+
+		if monster.get_hp() <= 0:
+			end_combat()
+			return
+
+		window.ontimer(combat_step, 100)
+
+
+	window.ontimer(combat_step, 100)
+	return
+
+
+def end_combat():
+	global STATE, global_cursor, combat_cursor
+	STATE = "explore"
+	combat_cursor.hideturtle() 
+	global_cursor.showturtle()
+	draw_grid()
+	turtle.update()
+
 #This funciton redraws the world after every move.
 def draw_grid():
     global pen
@@ -361,18 +492,26 @@ def tile_to_screen(row, col):
     dy = (camera_row - row) * TILE_SIZE
     return SCREEN_CENTER_X + dx, SCREEN_CENTER_Y + dy
 
+
 #This is the main function where the movement logic happens.
 def main():
 	#We initalise the global variables.
 	global global_cursor
 	global pen
+	global game_window
+	global main_hero
+	global STATE
+	STATE = "explore"
 	#game_font = "PressStart2P"
 	load_map("map.csv")
 	#We create the window for the game screen.
 	window = turtle.Screen()
+	hero = Hero("Yusha", 15, 10, 5, 4, 5, 10, "Sword")
+	main_hero = hero
 	window.setup(600,600)
 	window.title("Combat Window")
 	window.tracer(0)
+	game_window = window
 	local_pen = turtle.Turtle()
 	local_pen.hideturtle()
 	local_pen.speed(0)
@@ -410,8 +549,7 @@ def main():
 	window.onkey(enter, "Return")
 	#We set it so the hero and monster are not defending by default.
 	#We loop input on the window.
-	while window_active(window):
-		time.sleep(0.001)
+	turtle.mainloop()
 
 	#We attampt to gracefully close the window.
 	try:
