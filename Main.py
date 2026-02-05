@@ -197,6 +197,14 @@ def combat_down():
 	move(combat_cursor, global_index, COMBAT_POSITIONS)
 	game_window.update()
 
+def combat_enter():
+	print("Combat enter!")
+	global combat_return
+	if STATE != "combat":
+		print("Leaving early!")
+		return
+	combat_return = "a"
+	return
 
 #This function scrolls the world down, giving the effect that the turtle has moved up.
 def move_up():
@@ -340,6 +348,8 @@ def load_map(filename):
 
 #This function gets the return value and sets it into the combat return variable.
 def enter():
+	global combat_return
+	combat_return = "a"
 	print("Player hit enter!")
 	return
 
@@ -404,17 +414,14 @@ def run_combat(window, hero):
 	pen.clear()
 	global_cursor.hideturtle()
 	turtle.update()
-	def set_combat(value):
-		global combat_return
-		combat_return = value
+	combat_return = ""
 		
 	window.onkey(combat_up, "Up")
 	window.onkey(combat_down, "Down")
-	window.onkey(lambda: set_combat("a"), "Return")
-	window.onkey(lambda: set_combat("r"), "Escape")
+	window.onkey(combat_enter, "Return")
 
 	global_index = 0
-	combat_return = "e"
+	#combat_return = "e"
 
 	cursor = turtle.Turtle()
 	cursor.penup()
@@ -455,9 +462,11 @@ def run_combat(window, hero):
 		global combat_return, STATE
 		window.update()
 		if STATE != "combat":
+			print("Leaving combat")
 			return
 
 		if combat_return == "a":
+			print("Doiing action")
 			if global_index == 0 :
 				attack(hero, monster, "p", monster_defense)
 
