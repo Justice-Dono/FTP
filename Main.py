@@ -605,7 +605,7 @@ def main():
 	update_turtle.penup()
 	update_turtle.hideturtle()
 	update_turtle.goto(100, -100)
-	#We create a hero and a monster object.
+	#We create a hero object.
 	main_hero = Hero("Yusha",15,10,5,4,5,10,"Sword")
 	#We set the window to react to up and down inputs.
 	window.listen()
@@ -614,8 +614,7 @@ def main():
 	window.onkey(move_right,"Right")
 	window.onkey(move_left, "Left")
 	window.onkey(enter, "Return")
-	#We set it so the hero and monster are not defending by default.
-	#We loop input on the window.
+	#Updated this to use turtle.mainloop() instead of a terrible window live function.
 	turtle.mainloop()
 
 	#We attampt to gracefully close the window.
