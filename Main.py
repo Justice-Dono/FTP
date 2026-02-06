@@ -28,7 +28,12 @@ global camera_row
 camera_row = 0
 global camera_col
 camera_col = 0
-
+global enemy_turtle
+enemy_turtle = None
+global text_turtle 
+text_turtle = None
+global update_turtle 
+update_turtle = None
 global game_window
 game_window = None
 
@@ -174,6 +179,7 @@ def move(turtle, index, pos):
 	#We get the position, then teleport the turtle to the next position.
 	local_position = pos[index]
 	turtle.teleport(local_position[0],local_position[1])
+
 def combat_up():
 	global global_index
 	print("We are in combat!")
@@ -181,6 +187,8 @@ def combat_up():
 		return
 	if global_index == 0:
 		global_index = 3
+		move(combat_cursor, global_index, COMBAT_POSITIONS)
+		game_window.update()
 		return
 	global_index = (global_index - 1)
 	move(combat_cursor, global_index, COMBAT_POSITIONS)
@@ -192,6 +200,8 @@ def combat_down():
 		return
 	if global_index == 3:
 		global_index = 0
+		move(combat_cursor, global_index, COMBAT_POSITIONS)
+		game_window.update()
 		return
 	global_index = (global_index + 1)
 	move(combat_cursor, global_index, COMBAT_POSITIONS)
@@ -408,7 +418,7 @@ def attack(hero, enemy, attacker, defense):
 
 def run_combat(window, hero):
 	global STATE
-	global global_cursor, global_index, combat_return, combat_cursor, COMBAT_POSITIONS
+	global global_cursor, global_index, combat_return, combat_cursor, COMBAT_POSITIONS, text_turtle, update_turtle, enemy_turtle
 
 	STATE = "combat"
 	pen.clear()
@@ -421,16 +431,19 @@ def run_combat(window, hero):
 	window.onkey(combat_enter, "Return")
 
 	global_index = 0
-	#combat_return = "e"
 
 	cursor = turtle.Turtle()
 	cursor.penup()
 	combat_cursor = cursor
-
-	text_turtle = create_turtle(window, "Images/combat-text.gif")
+	combat_cursor.showturtle()
+	turtle.update()
+	window.update()
+	t_turtle = create_turtle(window, "Images/combat-text.gif")
+	text_turtle = t_turtle
 	text_turtle.teleport(-200, -200)
 
-	enemy_turtle = create_turtle(window, "Images/Slime.gif")
+	e_turtle = create_turtle(window, "Images/Slime.gif")
+	enemy_turtle = e_turtle
 	enemy_turtle.penup()
 
 	text_x = text_turtle.xcor()
@@ -443,9 +456,9 @@ def run_combat(window, hero):
 	    (text_x - 70, text_y - 34)
 	]
 
-	#move(combat_cursor, global_index, COMBAT_POSITIONS)
 
-	update_turtle = turtle.Turtle()
+	u_turtle = turtle.Turtle()
+	update_turtle = u_turtle
 	update_turtle.penup()
 	update_turtle.hideturtle()
 	update_turtle.goto(100, -100)
@@ -457,7 +470,7 @@ def run_combat(window, hero):
 
 	window.listen()
 	window.onkey(enter, "Return")
-
+	move(combat_cursor, 0, COMBAT_POSITIONS)
 	def combat_step():
 		global combat_return, STATE
 		window.update()
@@ -495,10 +508,13 @@ def run_combat(window, hero):
 
 
 def end_combat():
-	global STATE, global_cursor, combat_cursor
+	global STATE, global_cursor, combat_cursor, enemy_turtle, update_turtle, text_turtle
 	STATE = "explore"
 	combat_cursor.hideturtle() 
 	global_cursor.showturtle()
+	enemy_turtle.hideturtle()
+	update_turtle.hideturtle()
+	text_turtle.hideturtle()
 	draw_grid()
 	turtle.update()
 	game_window.onkey(move_up, "Up")
