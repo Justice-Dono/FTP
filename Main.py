@@ -592,7 +592,10 @@ def main():
 	cursor_row = 0
 	cursor_col = 0
 	x, y = tile_to_screen(camera_row, camera_col)
-	cursor.goto(x, y)
+	global_cursor.goto(x, y)
+	global_cursor.showturtle()
+	turtle.update()
+	window.update()
 	#We move the cursor to the starting combat position.
 	#move(cursor, global_index, COMBAT_POSITIONS)
 	#We set the combat_return to e.
