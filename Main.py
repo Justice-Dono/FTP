@@ -245,9 +245,9 @@ def move_up():
 		floor = floor + 1
 		floorstring = "floor" + str(floor) + ".csv"
 		load_map(floorstring)
+		draw_grid()
 		global_cursor.setheading(90)
 		turtle.update()
-		draw_grid()
 		return
 	#We subtract one from the camera row, update the heading, and print the chance.
 	camera_row -= 1
@@ -285,9 +285,9 @@ def move_down():
 		floor = floor + 1
 		floorstring = "floor" + str(floor) + ".csv"
 		load_map(floorstring)
+		draw_grid()
 		global_cursor.setheading(270)
 		turtle.update()
-		draw_grid()	
 		return
 	#Otherwise, we move the camera and roll for combat.
 	camera_row += 1
@@ -325,9 +325,9 @@ def move_left():
 		floor = floor + 1
 		floorstring = "floor" + str(floor) + ".csv"
 		load_map(floorstring)
+		draw_grid()
 		global_cursor.setheading(180)
 		turtle.update()
-		draw_grid()
 		return
 	#We move the turtle and update it's facing.
 	camera_col -= 1
@@ -363,9 +363,9 @@ def move_right():
 		floor = floor + 1
 		floorstring = "floor" + str(floor) + ".csv"
 		load_map(floorstring)
+		draw_grid()
 		global_cursor.setheading(0)
 		turtle.update()
-		draw_grid()
 		return
 	#Otherwise, we move the turtle.
 	camera_col += 1
@@ -377,6 +377,13 @@ def move_right():
 	if chance:
 		run_combat(game_window, main_hero)
 	return
+
+def update_player_cursor():
+	global global_cursor
+	x, y = tile_to_screen(cursor_row, cursor_col)
+	global_cursor.goto(x, y)
+	global_cursor.showturtle()
+	turtle.update()
 
 #This function loads the map.
 def load_map(filename):
@@ -393,6 +400,9 @@ def load_map(filename):
 	map_cols = len(tile_map[0])
 	camera_row = 0 
 	camera_col = 0
+	if floor > 1:
+		update_player_cursor()
+	return
 
 
 #This function gets the return value and sets it into the combat return variable.
