@@ -37,6 +37,9 @@ update_turtle = None
 global game_window
 game_window = None
 
+global floor
+floor = None
+
 #Shows the maximum size of the tiles, and the map the tiles live in.
 TILE_SIZE = 100
 tile_map = []
@@ -55,7 +58,8 @@ STATE = None
 TILE_COLORS = {
     0: "lightgray",  
     1: "dimgray",     
-    2: "royalblue"    
+    2: "royalblue",
+	3: "hotpink"  
 }
 
 #Class for the hero object. Probably could be made as a subclass of a larger character class.
@@ -218,7 +222,7 @@ def combat_enter():
 
 #This function scrolls the world down, giving the effect that the turtle has moved up.
 def move_up():
-	global STATE
+	global STATE, floor
 	if STATE != "explore":
 		return
 	global camera_row
@@ -237,6 +241,14 @@ def move_up():
 		global_cursor.setheading(90)
 		turtle.update()
 		return
+	elif tile == 3:
+		floor = floor + 1
+		floorstring = "floor" + str(floor) + ".csv"
+		load_map(floorstring)
+		global_cursor.setheading(90)
+		turtle.update()
+		draw_grid()
+		return
 	#We subtract one from the camera row, update the heading, and print the chance.
 	camera_row -= 1
 	draw_grid()
@@ -250,7 +262,7 @@ def move_up():
 
 #This function moves the world up, giving the illusion that the turtle has moved down.
 def move_down():
-	global STATE
+	global STATE, floor
 	if STATE != "explore":
 		return
 	global camera_row
@@ -269,6 +281,14 @@ def move_down():
 		global_cursor.setheading(270)
 		turtle.update()
 		return
+	elif tile == 3:
+		floor = floor + 1
+		floorstring = "floor" + str(floor) + ".csv"
+		load_map(floorstring)
+		global_cursor.setheading(270)
+		turtle.update()
+		draw_grid()	
+		return
 	#Otherwise, we move the camera and roll for combat.
 	camera_row += 1
 	draw_grid()
@@ -282,7 +302,7 @@ def move_down():
 
 #This function moves the world right, giving the illusion that the turtle has moved.
 def move_left():
-	global STATE
+	global STATE, floor
 	if STATE != "explore":
 		return
 	global camera_row
@@ -301,6 +321,14 @@ def move_left():
 		global_cursor.setheading(180)
 		turtle.update()
 		return
+	elif tile == 3:
+		floor = floor + 1
+		floorstring = "floor" + str(floor) + ".csv"
+		load_map(floorstring)
+		global_cursor.setheading(180)
+		turtle.update()
+		draw_grid()
+		return
 	#We move the turtle and update it's facing.
 	camera_col -= 1
 	draw_grid()
@@ -314,7 +342,7 @@ def move_left():
 
 #We move the world left to give the illusion that the turtle is moving.
 def move_right():
-	global STATE
+	global STATE, floor
 	if STATE != "explore":
 		return
 	global camera_row
@@ -331,6 +359,14 @@ def move_right():
 		global_cursor.setheading(0)
 		turtle.update()
 		return
+	elif tile == 3:
+		floor = floor + 1
+		floorstring = "floor" + str(floor) + ".csv"
+		load_map(floorstring)
+		global_cursor.setheading(0)
+		turtle.update()
+		draw_grid()
+		return
 	#Otherwise, we move the turtle.
 	camera_col += 1
 	draw_grid()
@@ -344,17 +380,20 @@ def move_right():
 
 #This function loads the map.
 def load_map(filename):
-    global tile_map, map_rows, map_cols
+	global tile_map, map_rows, map_cols, floor, camera_row, camera_col
 
-    tile_map = []
+	tile_map = []
 	#For each line, we loop through to create the tiles.
-    with open(filename, newline='') as csvfile:
-        reader = csv.reader(csvfile)
-        for row in reader:
-            tile_map.append([int(cell) for cell in row])
+	with open(filename, newline='') as csvfile:
+		reader = csv.reader(csvfile)
+		for row in reader:
+			tile_map.append([int(cell) for cell in row])
 	#We save the map row and map columns.
-    map_rows = len(tile_map)
-    map_cols = len(tile_map[0])
+	map_rows = len(tile_map)
+	map_cols = len(tile_map[0])
+	camera_row = 0 
+	camera_col = 0
+
 
 #This function gets the return value and sets it into the combat return variable.
 def enter():
@@ -564,10 +603,13 @@ def main():
 	global main_hero
 	global STATE
 	global COMBAT_POSITIONS
+	global floor
 	COMBAT_POSITIONS = [(100,200),(150,250),(200,300),(250,350)]
 	STATE = "explore"
+	floor = 1
 	#game_font = "PressStart2P"
-	load_map("map.csv")
+	floorstring = "floor" + str(floor) + ".csv"
+	load_map(floorstring)
 	#We create the window for the game screen.
 	window = turtle.Screen()
 	hero = Hero("Yusha", 15, 10, 5, 4, 5, 10, "Sword")
