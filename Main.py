@@ -7,29 +7,36 @@ import csv
 #This is the cursor turtle used for selecting actions.
 global global_cursor
 global_cursor = None
+#This is the main_hero used for combat and exploration.
 global main_hero 
 main_hero = None
+#This is the cursor used in combat.
 global combat_cursor
+combat_cursor = None
+#This is the array of positions used in combat, declared in the main() function.
 global COMBAT_POSITIONS
 COMBAT_POSITIONS = None
-combat_cursor = None
 #This keeps track of the correct action.
 global global_index
 global_index = 0
-#The clobal cursor keeps track of where the character is located
-#Row for the game's camera.
+#We create rows for the camera's row and column.
 global camera_row
 camera_row = 0
 global camera_col
 camera_col = 0
+#This the the turtle for the enemy. Needed for the end combat function.
 global enemy_turtle
 enemy_turtle = None
+#This is the turtle for text in combat.
 global text_turtle 
 text_turtle = None
+#This is the turtle for combat updates. Currently does nothing, but functions correctly.
 global update_turtle 
 update_turtle = None
+#This is the window for the game.
 global game_window
 game_window = None
+#This tracks which floor the game is on.
 global floor
 floor = None
 
@@ -115,27 +122,35 @@ class Monster:
 		self.speed = speed
 		self.lck = lck
 
+	#This function deals damage to the monster.
 	def damage(self, amount):
 		self.hp = self.hp - amount
 	
+	#This function gets the name of the monster.
 	def get_name(self):
 		return self.name
 	
+	#This function gets the hp of the monster.
 	def get_hp(self):
 		return self.hp
 	
+	#This function gets the mp of the monster.
 	def get_mp(self):
 		return self.mp
 	
+	#This function gets the st of the monster.
 	def get_st(self):
 		return self.st
 	
+	#This function gets the int of the monster.
 	def get_int(self):
 		return self.int
 	
+	#This function gets the speed of the monster.
 	def get_speed(self):
 		return self.speed
 	
+	#This function gets the luck of the monster.
 	def get_lck(self):
 		return self.lck
 	
@@ -155,12 +170,12 @@ def get_tile(row, col):
 	#We get the tile's row and column
 	tile_row = tile_map[row]
 	tile_col = tile_row[col]
-	#print(tile_col)
 	#We return the tile's column.
 	return tile_col
 	
 #This function determines the chance of a player getting an encounter on a specific move.
 def combat_chance(tile):
+	#We set combat variable to false as a default.
 	combat = False
 	floor = 0
 	#If the tile is a water tile, the chance of an encounter is higher.
@@ -172,45 +187,47 @@ def combat_chance(tile):
 		combat = True
 	return combat
 
+#This function moves the turtle in combat, but since I imported it from my previous project I am too afraid to rename or change it.
 def move(turtle, index, pos):
 	#We get the position, then teleport the turtle to the next position.
 	local_position = pos[index]
 	turtle.teleport(local_position[0],local_position[1])
+	return
 
+#This function moves the combat cursor up by updating the global index.
 def combat_up():
 	global global_index
-	print("We are in combat!")
+	#If we are not in combat, we return as a fallback.
 	if STATE != "combat":
 		return
 	if global_index == 0:
+		#If the global index is 0 (the top of the list), we set it to the bottom of the list.
 		global_index = 3
 		move(combat_cursor, global_index, COMBAT_POSITIONS)
 		game_window.update()
 		return
+	#We subtract 1 from the global index, and move the cursor to that point.
 	global_index = (global_index - 1)
 	move(combat_cursor, global_index, COMBAT_POSITIONS)
+	#We update the game window.
 	game_window.update()
+	return
 
+#This function move the combat cursor down by updating the global index.
 def combat_down():
 	global global_index
 	if STATE != "combat":
 		return
+	#If the global index is 3, we move the cursor to the top of the list.
 	if global_index == 3:
 		global_index = 0
 		move(combat_cursor, global_index, COMBAT_POSITIONS)
 		game_window.update()
 		return
+	#We increment the global index, then move the cursor.
 	global_index = (global_index + 1)
 	move(combat_cursor, global_index, COMBAT_POSITIONS)
 	game_window.update()
-
-def combat_enter():
-	print("Combat enter!")
-	global combat_return
-	if STATE != "combat":
-		print("Leaving early!")
-		return
-	combat_return = "a"
 	return
 
 #This function scrolls the world down, giving the effect that the turtle has moved up.
@@ -462,7 +479,6 @@ def run_combat(window, hero):
 		
 	window.onkey(combat_up, "Up")
 	window.onkey(combat_down, "Down")
-	window.onkey(combat_enter, "Return")
 
 	global_index = 0
 
