@@ -18,10 +18,6 @@ main_hero = None
 global global_index
 global_index = 0
 #The clobal cursor keeps track of where the character is located
-global cursor_row 
-cursor_row = 0
-global cursor_col
-cursor_col = 0 
 distance = 20
 #Row for the game's camera.
 global camera_row
@@ -378,12 +374,6 @@ def move_right():
 		run_combat(game_window, main_hero)
 	return
 
-def update_player_cursor():
-	global global_cursor
-	x, y = tile_to_screen(cursor_row, cursor_col)
-	global_cursor.goto(x, y)
-	global_cursor.showturtle()
-	turtle.update()
 
 #This function loads the map.
 def load_map(filename):
@@ -400,8 +390,6 @@ def load_map(filename):
 	map_cols = len(tile_map[0])
 	camera_row = 0 
 	camera_col = 0
-	if floor > 1:
-		update_player_cursor()
 	return
 
 
@@ -528,7 +516,7 @@ def run_combat(window, hero):
 			return
 
 		if combat_return == "a":
-			print("Doiing action")
+			print("Doing action")
 			if global_index == 0 :
 				attack(hero, monster, "p", monster_defense)
 
@@ -640,18 +628,12 @@ def main():
 	cursor.penup()
 	
 	global_cursor = cursor
-	global cursor_row, cursor_col
-	cursor_row = 0
-	cursor_col = 0
 	x, y = tile_to_screen(camera_row, camera_col)
 	global_cursor.goto(x, y)
 	global_cursor.showturtle()
 	turtle.update()
 	window.update()
 	#We move the cursor to the starting combat position.
-	#move(cursor, global_index, COMBAT_POSITIONS)
-	#We set the combat_return to e.
-	combat_return = "e"
 	#We create the update turtle.
 	update_turtle = turtle.Turtle()
 	update_turtle.penup()
