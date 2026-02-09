@@ -467,106 +467,119 @@ def attack(hero, enemy, attacker, defense):
 		damage = abs(ending_hp - starting_hp)
 		return damage
 
+#This function is adapted from the poorly named CTP. It works mostly the same, but with a lot more global imports.
 def run_combat(window, hero):
 	global STATE
 	global global_cursor, global_index, combat_return, combat_cursor, COMBAT_POSITIONS, text_turtle, update_turtle, enemy_turtle
-
+	#We set the game state to combat.
 	STATE = "combat"
+	#We hide the tile maze.
 	pen.clear()
 	global_cursor.hideturtle()
 	turtle.update()
 	combat_return = ""
-		
+	#We set the up and down keys to combat_up and combat_down.
 	window.onkey(combat_up, "Up")
 	window.onkey(combat_down, "Down")
-
+	#We set the global index to 0 as a default.
 	global_index = 0
-
+	#We create a new turtle as the cursor.
 	cursor = turtle.Turtle()
 	cursor.penup()
 	combat_cursor = cursor
 	combat_cursor.showturtle()
 	turtle.update()
 	window.update()
+	#We make a turtle for the combat text image.
 	t_turtle = create_turtle(window, "Images/combat-text.gif")
 	text_turtle = t_turtle
 	text_turtle.teleport(-200, -200)
-
+	#We create a turtle for the enemy image.
 	e_turtle = create_turtle(window, "Images/Slime.gif")
 	enemy_turtle = e_turtle
 	enemy_turtle.penup()
-
+	#We set the text x and y, and base the combat positions off of that.
 	text_x = text_turtle.xcor()
 	text_y = text_turtle.ycor()
-
+	#The combat_positions array is set based off of the text location.
 	COMBAT_POSITIONS = [
 	    (text_x - 70, text_y + 33),
 	    (text_x - 70, text_y + 11.5),
 	    (text_x - 70, text_y - 11),
 	    (text_x - 70, text_y - 34)
 	]
-
-
+	#The update turtle is created.
 	u_turtle = turtle.Turtle()
 	update_turtle = u_turtle
 	update_turtle.penup()
 	update_turtle.hideturtle()
 	update_turtle.goto(100, -100)
-
+	#We create a monster. In the future it might even be a different monster.
 	monster = Monster("Slime", 3, 1, 1, 2, 6, 3)
-
+	#We create defense variables for the monster and hero, but it doesn't work.
 	hero_defense = False
 	monster_defense = False
-
+	#We set the window to listen, and move the combat cursor.
 	window.listen()
 	window.onkey(enter, "Return")
 	move(combat_cursor, 0, COMBAT_POSITIONS)
+	#This is a function that runs a step of combat.
 	def combat_step():
 		global combat_return, STATE
+		#We update the window.
 		window.update()
 		if STATE != "combat":
+			#If the game state is not combat, we set it to combat.
 			print("Leaving combat")
 			return
-
+		#If the return is a, the user has hit enter.
 		if combat_return == "a":
 			print("Doing action")
 			if global_index == 0 :
+				#We attack the enemy.
 				attack(hero, monster, "p", monster_defense)
 
+			#Otherwise, we set hero defense to true.
 			elif global_index == "1":
+				#This variable is inacessable so I will need to rewrite this.
 				hero_defense = True
 				combat_return = "e"
-
+			#We pass if the index is 2.
 			elif global_index == "2":
 				pass
-			
+			#If the index is 3, we end combat.
 			elif global_index == "3":
+				#This doesn't actually work.
 				end_combat()
 				return
+		#We set the combat_return.
 		combat_return = "e"
+		#If the monster hp is 0, we end combat and return.
 		print(monster.get_hp())
 		if monster.get_hp() <= 0:
 			end_combat()
 			return
 		window.update()
 		window.ontimer(combat_step, 100)
-
-
+	#We run this function every 100 miliseconds.
 	window.ontimer(combat_step, 100)
 	window.update()
 	return
 
-
+#This function cleans up after combat.
 def end_combat():
 	global STATE, global_cursor, combat_cursor, enemy_turtle, update_turtle, text_turtle
 	STATE = "explore"
+	#We show the global cursor and hide all the combat turtles.
 	combat_cursor.hideturtle() 
 	global_cursor.showturtle()
 	enemy_turtle.hideturtle()
 	update_turtle.hideturtle()
 	text_turtle.hideturtle()
+	#We draw the grid and update the turtle.
 	draw_grid()
 	turtle.update()
+	#We set the game window to accept inputs like normal maze movement.
 	game_window.onkey(move_up, "Up")
 	game_window.onkey(move_down, "Down")
 	game_window.onkey(move_left, "Left")
