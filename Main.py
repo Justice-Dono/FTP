@@ -1,6 +1,5 @@
 import turtle
 import tkinter as tk
-import time
 import random
 import math
 import csv
@@ -9,16 +8,15 @@ import csv
 global global_cursor
 global_cursor = None
 global main_hero 
+main_hero = None
 global combat_cursor
 global COMBAT_POSITIONS
 COMBAT_POSITIONS = None
 combat_cursor = None
-main_hero = None
 #This keeps track of the correct action.
 global global_index
 global_index = 0
 #The clobal cursor keeps track of where the character is located
-distance = 20
 #Row for the game's camera.
 global camera_row
 camera_row = 0
@@ -32,7 +30,6 @@ global update_turtle
 update_turtle = None
 global game_window
 game_window = None
-
 global floor
 floor = None
 
@@ -50,7 +47,7 @@ pen = None
 
 global STATE
 STATE = None
-#The set of tile colours, 0 for normal ground, 1 for walls, and 2 for water.
+#The set of tile colours, 0 for normal ground, 1 for walls, and 2 for water, 3 for map change.
 TILE_COLORS = {
     0: "lightgray",  
     1: "dimgray",     
