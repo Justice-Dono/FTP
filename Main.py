@@ -39,6 +39,10 @@ game_window = None
 #This tracks which floor the game is on.
 global floor
 floor = None
+global hero_defense
+hero_defense = False
+global monster_defense
+monster_defense = False
 
 #Shows the maximum size of the tiles, and the map the tiles live in.
 TILE_SIZE = 100
@@ -267,7 +271,6 @@ def move_up():
 	chance = combat_chance(tile)
 	if chance :
 		run_combat(game_window, main_hero)
-	print(chance)
 	return
 
 #This function moves the world up, giving the illusion that the turtle has moved down.
@@ -305,7 +308,6 @@ def move_down():
 	global_cursor.setheading(270)
 	turtle.update()
 	chance = combat_chance(tile)
-	print(chance)
 	if chance:
 		run_combat(game_window, main_hero)
 	return
@@ -345,7 +347,6 @@ def move_left():
 	global_cursor.setheading(180)
 	turtle.update()
 	chance = combat_chance(tile)
-	print(chance)
 	if chance:
 		run_combat(game_window, main_hero)
 	return
@@ -383,7 +384,6 @@ def move_right():
 	global_cursor.setheading(0)
 	turtle.update()
 	chance = combat_chance(tile)
-	print(chance)
 	if chance:
 		run_combat(game_window, main_hero)
 	return
@@ -525,7 +525,7 @@ def run_combat(window, hero):
 	move(combat_cursor, 0, COMBAT_POSITIONS)
 	#This is a function that runs a step of combat.
 	def combat_step():
-		global combat_return, STATE
+		global combat_return, STATE, hero_defense, monster_defense
 		#We update the window.
 		window.update()
 		if STATE != "combat":
@@ -534,6 +534,7 @@ def run_combat(window, hero):
 			return
 		#If the return is a, the user has hit enter.
 		if combat_return == "a":
+			print(monster.get_hp())
 			print("Doing action")
 			if global_index == 0 :
 				#We attack the enemy.
@@ -543,7 +544,6 @@ def run_combat(window, hero):
 			elif global_index == "1":
 				#This variable is inacessable so I will need to rewrite this.
 				hero_defense = True
-				combat_return = "e"
 			#We pass if the index is 2.
 			elif global_index == "2":
 				pass
@@ -552,10 +552,11 @@ def run_combat(window, hero):
 				#This doesn't actually work.
 				end_combat()
 				return
+			attack(hero, monster, "e", hero_defense)
+			hero_defense = False
 		#We set the combat_return.
 		combat_return = "e"
 		#If the monster hp is 0, we end combat and return.
-		print(monster.get_hp())
 		if monster.get_hp() <= 0:
 			end_combat()
 			return
