@@ -3,6 +3,8 @@ import tkinter as tk
 import random
 import math
 import csv
+import sys
+import os
 
 #This is the cursor turtle used for selecting actions.
 global global_cursor
@@ -157,7 +159,12 @@ class Monster:
 	#This function gets the luck of the monster.
 	def get_lck(self):
 		return self.lck
-	
+
+def resource_path(relative_path):
+	if hasattr(sys, '_MEIPASS'):
+		return os.path.join(sys._MEIPASS, relative_path)
+	return os.path.join(os.path.abspath("."), relative_path)
+
 #This function checks if the window is still active.
 def window_active(window):
 	try:
@@ -258,7 +265,7 @@ def move_up():
 	elif tile == 3:
 		floor = floor + 1
 		floorstring = "floor" + str(floor) + ".csv"
-		load_map(floorstring)
+		load_map(resource_path(resource_path(floorstring)))
 		draw_grid()
 		global_cursor.setheading(90)
 		turtle.update()
@@ -297,7 +304,7 @@ def move_down():
 	elif tile == 3:
 		floor = floor + 1
 		floorstring = "floor" + str(floor) + ".csv"
-		load_map(floorstring)
+		load_map(resource_path(floorstring))
 		draw_grid()
 		global_cursor.setheading(270)
 		turtle.update()
@@ -336,7 +343,7 @@ def move_left():
 	elif tile == 3:
 		floor = floor + 1
 		floorstring = "floor" + str(floor) + ".csv"
-		load_map(floorstring)
+		load_map(resource_path(floorstring))
 		draw_grid()
 		global_cursor.setheading(180)
 		turtle.update()
@@ -373,7 +380,7 @@ def move_right():
 	elif tile == 3:
 		floor = floor + 1
 		floorstring = "floor" + str(floor) + ".csv"
-		load_map(floorstring)
+		load_map(resource_path(floorstring))
 		draw_grid()
 		global_cursor.setheading(0)
 		turtle.update()
@@ -491,11 +498,11 @@ def run_combat(window, hero):
 	turtle.update()
 	window.update()
 	#We make a turtle for the combat text image.
-	t_turtle = create_turtle(window, "Images/combat-text.gif")
+	t_turtle = create_turtle(window, resource_path("Images/combat-text.gif"))
 	text_turtle = t_turtle
 	text_turtle.teleport(-200, -200)
 	#We create a turtle for the enemy image.
-	e_turtle = create_turtle(window, "Images/Slime.gif")
+	e_turtle = create_turtle(window, resource_path("Images/Slime.gif"))
 	enemy_turtle = e_turtle
 	enemy_turtle.penup()
 	#We set the text x and y, and base the combat positions off of that.
@@ -634,7 +641,7 @@ def main():
 	floor = 1
 	#game_font = "PressStart2P"
 	floorstring = "floor" + str(floor) + ".csv"
-	load_map(floorstring)
+	load_map(resource_path(floorstring))
 	#We create the window for the game screen.
 	window = turtle.Screen()
 	hero = Hero("Yusha", 15, 10, 5, 4, 5, 10, "Sword")
