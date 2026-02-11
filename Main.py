@@ -98,6 +98,10 @@ class Hero:
 	def get_mp(self):
 		return self.mp
 	
+	def spell(self):
+		self.mp = self.mp - 1
+		return
+	
 	#This function returns the st of the hero.
 	def get_st(self):
 		return self.st
@@ -144,6 +148,10 @@ class Monster:
 	#This function gets the mp of the monster.
 	def get_mp(self):
 		return self.mp
+	
+	def spell(self):
+		self.mp = self.mp - 1
+		return
 	
 	#This function gets the st of the monster.
 	def get_st(self):
@@ -453,6 +461,10 @@ def attack(hero, enemy, attacker, defense):
 		else:
 			st = st - df
 		#Enemy takes damage by the final value.
+		dodge = enemy.get_lck()
+		chance = random.randint(0,(dodge + 2))
+		if chance >= dodge:
+			return 100
 		enemy.damage(st)
 		ending_hp = enemy.get_hp()
 		damage = abs(ending_hp - starting_hp)
@@ -470,6 +482,10 @@ def attack(hero, enemy, attacker, defense):
 			st = 0
 		else:
 			st = st - df
+		dodge = hero.get_lck()
+		chance = random.randint(0,(dodge + 2))
+		if chance >= dodge:
+			return 100
 		hero.damage(st)
 		ending_hp = hero.get_hp()
 		damage = abs(ending_hp - starting_hp)
@@ -479,6 +495,9 @@ def cast(hero, enemy, attacker, defense):
 	#If the attack is initiated by the player, the attacker variable should read "p"
 	if attacker == "p":
 		#We get the enemy's hp.
+		if hero.get_mp() < 1:
+			return 101
+		hero.spell()
 		starting_hp = enemy.get_hp()
 		#We get the hero and the monster's strength.
 		st = hero.get_int()
@@ -507,6 +526,9 @@ def cast(hero, enemy, attacker, defense):
 		return damage 
 	#This function repeats if the attacker if the enemy, but with the roles swapped.
 	if attacker == "e":
+		if enemy.get_mp() < 1:
+			return 101
+		enemy.spell()
 		starting_hp = hero.get_hp()
 		st = enemy.get_int()
 		df = hero.get_int()
@@ -531,6 +553,8 @@ def run_combat(window, hero):
 	global global_cursor, global_index, combat_return, combat_cursor, COMBAT_POSITIONS, text_turtle, update_turtle, enemy_turtle
 	#We set the game state to combat.
 	STATE = "combat"
+	NAMES = ["Slime", "She-slime", "Bubble Slime", "Healslime", "Cureslime", "Seaslime", "Shell Slime", "King Slime"]
+	length = len(NAMES)
 	#We hide the tile maze.
 	pen.clear()
 	global_cursor.hideturtle()
@@ -573,7 +597,11 @@ def run_combat(window, hero):
 	update_turtle.hideturtle()
 	update_turtle.goto(100, -100)
 	#We create a monster. In the future it might even be a different monster.
-	monster = Monster("Slime", 3, 1, 1, 2, 6, 3)
+	new_name = random.randint(0, length -1)
+	hp = random.randint(0,10)
+	strength = random.randint(0,10)
+	mon_int = random.randint(0,10) 
+	monster = Monster(NAMES[new_name], hp, 1, strength, mon_int, 6, 3)
 	#We create defense variables for the monster and hero, but it doesn't work.
 	#We set the window to listen, and move the combat cursor.
 	window.listen()
@@ -594,7 +622,7 @@ def run_combat(window, hero):
 			print("Doing action")
 			if global_index == 0 :
 				#We attack the enemy.
-				update_turtle.write(hero.get_name + " attacked the " + monster.get_name() + "!")
+				update_turtle.write(hero.get_name() + " attacked the " + monster.get_name() + "!")
 				turtle.update()
 				time.sleep(1)
 				update_turtle.clear()
@@ -602,10 +630,10 @@ def run_combat(window, hero):
 				chance = random.randint(0,1)
 				if chance == 1:
 					monster_defense = True
-				update_turtle.write(monster.get_name + " braced for impact!")
+				update_turtle.write(monster.get_name() + " braced for impact!")
 				turtle.update()
 				time.sleep(1)
-				update_turtle.clear
+				update_turtle.clear()
 				turtle.update()
 				damage = attack(hero, monster, "p", monster_defense)
 				if damage <= 0:
@@ -622,22 +650,50 @@ def run_combat(window, hero):
 			elif global_index == "1":
 				#This variable is inacessable so I will need to rewrite this.
 				hero_defense = True
+
 			#We pass if the index is 2.
 			elif global_index == "2":
-				pass
+				cast(hero, monster,"p", monster_defense)
+				update_turtle.write(hero.get_name() + " cast a spell on " + monster.get_name() + "!")
+				turtle.update()
+				time.sleep(1)
+				update_turtle.clear()
+				turtle.update()
+				if damage <= 0:
+					update_turtle.write(monster.get_name() + " took no damage!")
+				elif damage == 101:
+					update_turtle.write("But " + hero.get_name() + " didn't have enough MP!")
+				else:
+					update_turtle.write(monster.get_hp() + " took " + damage + " damage!")
+				turtle.update()
+				time.sleep(1)
+				update_turtle.clear()
+				turtle.update()
+
+
 			#If the index is 3, we end combat.
 			elif global_index == "3":
 				#This doesn't actually work.
 				end_combat()
 				return
+			
 			if monster.get_hp() > 0:
+				update_turtle.write(monster.get_name() + " attacked " + hero.get_name() + "!")
+				turtle.update()
+				time.sleep(1)
+				update_turtle.clear()
+				turtle.update()
 				damage = attack(hero, monster, "e", hero_defense)
 				if damage <= 0:
 					update_turtle.write(hero.get_name() + " took no damage!")
-				elif damage == -99:
+				elif damage == 100:
 					update_turtle.write(hero.get_name() + " dodged!")
 				else:
 					update_turtle.write(hero.get_name() + " took " + str(damage) + " damage!")
+				turtle.update()
+				time.sleep(1)
+				update_turtle.clear()
+				turtle.update()
 			hero_defense = False
 			monster_defense = False
 		#We set the combat_return.
