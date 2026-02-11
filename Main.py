@@ -46,6 +46,14 @@ global hero_defense
 hero_defense = False
 global monster_defense
 monster_defense = False
+global hero_name
+hero_name = None
+global monster_name 
+monster_name = None
+global hero_hp
+hero_hp = None
+global monster_hp
+monster_hp = None
 
 #Shows the maximum size of the tiles, and the map the tiles live in.
 TILE_SIZE = 100
@@ -122,6 +130,12 @@ class Hero:
 	def get_items(self):
 		return self.items
 
+	def heal(self, amount):
+		if self.hp + amount >= 10:
+			self.hp = 10
+			return
+		self.hp = self.hp + amount
+		return
 #This is the monster version of the hero class. All attributes and functions are the same.
 class Monster:
 	def __init__(self, name, hp, mp, st, int, lck, speed):
@@ -272,6 +286,7 @@ def move_up():
 		turtle.update()
 		return
 	elif tile == 3:
+		main_hero.heal(1)
 		floor = floor + 1
 		floorstring = "floor" + str(floor) + ".csv"
 		load_map(resource_path(resource_path(floorstring)))
@@ -280,6 +295,7 @@ def move_up():
 		turtle.update()
 		return
 	#We subtract one from the camera row, update the heading, and print the chance.
+	main_hero.heal(1)
 	camera_row -= 1
 	draw_grid()
 	global_cursor.setheading(90)
@@ -311,6 +327,7 @@ def move_down():
 		turtle.update()
 		return
 	elif tile == 3:
+		main_hero.heal(1)
 		floor = floor + 1
 		floorstring = "floor" + str(floor) + ".csv"
 		load_map(resource_path(floorstring))
@@ -319,6 +336,7 @@ def move_down():
 		turtle.update()
 		return
 	#Otherwise, we move the camera and roll for combat.
+	main_hero.heal(1)
 	camera_row += 1
 	draw_grid()
 	global_cursor.setheading(270)
@@ -350,6 +368,7 @@ def move_left():
 		turtle.update()
 		return
 	elif tile == 3:
+		main_hero.heal(1)
 		floor = floor + 1
 		floorstring = "floor" + str(floor) + ".csv"
 		load_map(resource_path(floorstring))
@@ -358,6 +377,7 @@ def move_left():
 		turtle.update()
 		return
 	#We move the turtle and update it's facing.
+	main_hero.heal(1)
 	camera_col -= 1
 	draw_grid()
 	global_cursor.setheading(180)
@@ -387,6 +407,7 @@ def move_right():
 		turtle.update()
 		return
 	elif tile == 3:
+		main_hero.heal(1)
 		floor = floor + 1
 		floorstring = "floor" + str(floor) + ".csv"
 		load_map(resource_path(floorstring))
@@ -395,6 +416,7 @@ def move_right():
 		turtle.update()
 		return
 	#Otherwise, we move the turtle.
+	main_hero.heal(1)
 	camera_col += 1
 	draw_grid()
 	global_cursor.setheading(0)
@@ -439,6 +461,28 @@ def create_turtle(window, shape):
 	local_turtle.shape(shape)
 	return local_turtle
 
+def update_hp(window, name, hp):
+	global hero_hp, monster_hp
+	if hp <= 0:
+		hp = 0
+	if name == "h":
+		hero_hp.reset()
+		hero_hp.teleport(10000,10000)
+		turtle.update()
+		h_turtle = create_turtle(window, resource_path("Images/" + "hp" + str(hp) + ".gif"))
+		hero_hp = h_turtle
+		hero_hp.teleport(-200, 175)
+		turtle.update()
+	if name == "m":
+		monster_hp.reset()
+		monster_hp.teleport(10000,10000)
+		turtle.update()
+		m_turtle = create_turtle(window, resource_path("Images/" + "hp" + str(hp) + ".gif"))
+		monster_hp = m_turtle
+		monster_hp.teleport(150, 175)
+		turtle.update()
+	return
+
 #This function simulates the attack action between the hero and a monster.
 def attack(hero, enemy, attacker, defense):
 	#If the attack is initiated by the player, the attacker variable should read "p"
@@ -450,7 +494,7 @@ def attack(hero, enemy, attacker, defense):
 		df = enemy.get_st()
 		if defense == True:
 			#If the monster is defending, we multiply the monster's defense by 2.
-			df = df *2
+			df = df + 1
 		#We roll random numbers based on the strength to determine final damage.
 		st = random.randint(0,st)
 		df = random.randint(0,df)
@@ -550,7 +594,7 @@ def cast(hero, enemy, attacker, defense):
 #This function is adapted from the poorly named CTP. It works mostly the same, but with a lot more global imports.
 def run_combat(window, hero):
 	global STATE
-	global global_cursor, global_index, combat_return, combat_cursor, COMBAT_POSITIONS, text_turtle, update_turtle, enemy_turtle
+	global global_cursor, global_index, combat_return, combat_cursor, COMBAT_POSITIONS, text_turtle, update_turtle, enemy_turtle, hero_name, hero_hp, monster_name, monster_hp
 	#We set the game state to combat.
 	STATE = "combat"
 	NAMES = ["Slime", "She-slime", "Bubble Slime", "Healslime", "Cureslime", "Seaslime", "Shell Slime", "King Slime"]
@@ -570,6 +614,12 @@ def run_combat(window, hero):
 	cursor.penup()
 	combat_cursor = cursor
 	combat_cursor.showturtle()
+	h_name = create_turtle(window, resource_path("Images/Hero.gif"))
+	hero_name = h_name
+	hero_name.teleport(-200, 250)
+	m_name = create_turtle(window, resource_path("Images/Enemy.gif"))
+	monster_name = m_name
+	monster_name.teleport(150, 250)
 	turtle.update()
 	window.update()
 	#We make a turtle for the combat text image.
@@ -598,15 +648,25 @@ def run_combat(window, hero):
 	update_turtle.goto(100, -100)
 	#We create a monster. In the future it might even be a different monster.
 	new_name = random.randint(0, length -1)
-	hp = random.randint(0,10)
-	strength = random.randint(0,10)
-	mon_int = random.randint(0,10) 
+	hp = random.randint(1,10)
+	strength = random.randint(1,5)
+	mon_int = random.randint(1,5) 
 	monster = Monster(NAMES[new_name], hp, 1, strength, mon_int, 6, 3)
 	#We create defense variables for the monster and hero, but it doesn't work.
 	#We set the window to listen, and move the combat cursor.
 	window.listen()
 	window.onkey(enter, "Return")
 	move(combat_cursor, 0, COMBAT_POSITIONS)
+	local_hp = hero.get_hp()
+	print(str(hero.get_hp()))
+	print(str(monster.get_hp()))
+	h_turtle = create_turtle(window, resource_path("Images/" + "hp" + str(local_hp) + ".gif"))
+	hero_hp = h_turtle
+	hero_hp.teleport(-200, 175)
+	local_hp = monster.get_hp()
+	m_turtle = create_turtle(window, resource_path("Images/" + "hp" + str(local_hp) + ".gif"))
+	monster_hp = m_turtle
+	monster_hp.teleport(150, 175)
 	#This is a function that runs a step of combat.
 	def combat_step():
 		global combat_return, STATE, hero_defense, monster_defense
@@ -674,7 +734,9 @@ def run_combat(window, hero):
 				#This doesn't actually work.
 				end_combat()
 				return
-			
+			update_hp(window,"m", monster.get_hp())
+			turtle.update()
+			window.update()
 			if monster.get_hp() > 0:
 				update_turtle.write(monster.get_name() + " attacked " + hero.get_name() + "!")
 				turtle.update()
@@ -688,6 +750,7 @@ def run_combat(window, hero):
 					update_turtle.write(hero.get_name() + " dodged!")
 				else:
 					update_turtle.write(hero.get_name() + " took " + str(damage) + " damage!")
+				update_hp(window, "h", hero.get_hp())
 				turtle.update()
 				time.sleep(1)
 				update_turtle.clear()
@@ -714,7 +777,7 @@ def run_combat(window, hero):
 
 #This function cleans up after combat.
 def end_combat():
-	global STATE, global_cursor, combat_cursor, enemy_turtle, update_turtle, text_turtle
+	global STATE, global_cursor, combat_cursor, enemy_turtle, update_turtle, text_turtle, monster_name, hero_name, hero_hp, monster_hp
 	STATE = "explore"
 	#We show the global cursor and hide all the combat turtles.
 	combat_cursor.hideturtle() 
@@ -722,6 +785,10 @@ def end_combat():
 	enemy_turtle.hideturtle()
 	update_turtle.hideturtle()
 	text_turtle.hideturtle()
+	monster_name.hideturtle()
+	monster_hp.hideturtle()
+	hero_name.hideturtle()
+	hero_hp.hideturtle()
 	#We draw the grid and update the turtle.
 	draw_grid()
 	turtle.update()
@@ -782,7 +849,7 @@ def main():
 	load_map(resource_path(floorstring))
 	#We create the window for the game screen.
 	window = turtle.Screen()
-	hero = Hero("Yusha", 15, 10, 5, 4, 5, 10, "Sword")
+	hero = Hero("Yusha", 10, 10, 5, 4, 5, 10, "Sword")
 	main_hero = hero
 	window.setup(600,600)
 	window.title("Combat Window")
@@ -812,7 +879,7 @@ def main():
 	update_turtle.hideturtle()
 	update_turtle.goto(100, -100)
 	#We create a hero object.
-	main_hero = Hero("Yusha",15,10,5,4,5,10,"Sword")
+	main_hero = Hero("Yusha",10,10,5,4,5,10,"Sword")
 	#We set the window to react to up and down inputs.
 	window.listen()
 	window.onkey(move_up, "Up")
