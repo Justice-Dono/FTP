@@ -1,6 +1,7 @@
 import time
 import turtle
 import tkinter as tk
+from tkinter import messagebox
 import random
 import math
 import csv
@@ -74,9 +75,47 @@ TILE_COLORS = {
     0: "lightgray",  
     1: "dimgray",     
     2: "royalblue",
-	3: "hotpink"  
+	3: "hotpink",
+	4: "gold"
 }
 
+import tkinter.simpledialog as simpledialog
+
+def win():
+	print("You win!")
+	global game_window
+	game_window.clearscreen()
+	root = tk.Tk()
+	root.withdraw()
+	messagebox.showinfo("You win!", "Thank you for playing.")
+	root.destroy()
+	turtle.bye()
+	return
+
+def lose():
+	print("You lose...")
+	global game_window
+	game_window.clearscreen()
+	root = tk.Tk()
+	root.withdraw()
+	messagebox.showinfo("You lose...", "You have died.")
+	root.destroy()
+	turtle.bye()
+
+def ask_player_name():
+    root = tk.Tk()
+    root.withdraw()  # Hide main tkinter window
+    name = simpledialog.askstring("Player Name", "Enter your name:")
+    root.destroy()
+
+    if not name:
+        return "Hero"
+    return name
+
+def text(local_text):
+	global update_turtle
+	update_turtle.write(local_text, font=("Arial", 16, "bold"))
+	turtle.update()
 #Class for the hero object. Probably could be made as a subclass of a larger character class.
 class Hero:
 	def __init__(self, name, hp, mp, st, int, speed, lck, items):
@@ -214,9 +253,9 @@ def combat_chance(tile):
 	floor = 0
 	#If the tile is a water tile, the chance of an encounter is higher.
 	if tile == 2:
-		floor = 2
+		floor = 4
 	roll = random.randrange(floor,8)
-	if roll > 4:
+	if roll > 5:
 		#If the number is 5 or higher, we trigger combat.
 		combat = True
 	return combat
@@ -294,6 +333,9 @@ def move_up():
 		global_cursor.setheading(90)
 		turtle.update()
 		return
+	elif tile == 4:
+		win()
+
 	#We subtract one from the camera row, update the heading, and print the chance.
 	main_hero.heal(1)
 	camera_row -= 1
@@ -334,6 +376,9 @@ def move_down():
 		draw_grid()
 		global_cursor.setheading(270)
 		turtle.update()
+		return
+	elif tile == 4:
+		win()
 		return
 	#Otherwise, we move the camera and roll for combat.
 	main_hero.heal(1)
@@ -376,6 +421,9 @@ def move_left():
 		global_cursor.setheading(180)
 		turtle.update()
 		return
+	elif tile == 4:
+		win()
+		return
 	#We move the turtle and update it's facing.
 	main_hero.heal(1)
 	camera_col -= 1
@@ -414,6 +462,9 @@ def move_right():
 		draw_grid()
 		global_cursor.setheading(0)
 		turtle.update()
+		return
+	elif tile == 4:
+		win()
 		return
 	#Otherwise, we move the turtle.
 	main_hero.heal(1)
@@ -584,7 +635,7 @@ def cast(hero, enemy, attacker, defense):
 		else:
 			st = st - df
 		dodge = hero.get_lck()
-		chance = random.randint(0,(dodge + 2))
+		chance = random.randint(0,(dodge + 1))
 		if chance >= dodge:
 			return 100
 		hero.damage(st)
@@ -645,13 +696,13 @@ def run_combat(window, hero):
 	update_turtle = u_turtle
 	update_turtle.penup()
 	update_turtle.hideturtle()
-	update_turtle.goto(100, -100)
+	update_turtle.goto(-137, -125)
 	#We create a monster. In the future it might even be a different monster.
 	new_name = random.randint(0, length -1)
-	hp = random.randint(1,10)
-	strength = random.randint(1,5)
+	hp = random.randint(1,6)
+	strength = random.randint(1,7)
 	mon_int = random.randint(1,5) 
-	monster = Monster(NAMES[new_name], hp, 1, strength, mon_int, 6, 3)
+	monster = Monster(NAMES[new_name], hp, 1, strength, mon_int, 10, 3)
 	#We create defense variables for the monster and hero, but it doesn't work.
 	#We set the window to listen, and move the combat cursor.
 	window.listen()
@@ -680,9 +731,11 @@ def run_combat(window, hero):
 		if combat_return == "a":
 			print(monster.get_hp())
 			print("Doing action")
+			print(str(global_index))
 			if global_index == 0 :
+				print("attacking!")
 				#We attack the enemy.
-				update_turtle.write(hero.get_name() + " attacked the " + monster.get_name() + "!")
+				text(hero.get_name() + " attacked the " + monster.get_name() + "!")
 				turtle.update()
 				time.sleep(1)
 				update_turtle.clear()
@@ -690,66 +743,81 @@ def run_combat(window, hero):
 				chance = random.randint(0,1)
 				if chance == 1:
 					monster_defense = True
-				update_turtle.write(monster.get_name() + " braced for impact!")
-				turtle.update()
-				time.sleep(1)
-				update_turtle.clear()
-				turtle.update()
+					text(monster.get_name() + " braced for impact!")
+					turtle.update()
+					time.sleep(1)
+					update_turtle.clear()
+					turtle.update()
 				damage = attack(hero, monster, "p", monster_defense)
 				if damage <= 0:
-					update_turtle.write(monster.get_name() + " took no damage!")
+					text(monster.get_name() + " took no damage!")
 				elif damage == 100:
-					update_turtle.write(monster.get_name() + " dodged!")
+					text(monster.get_name() + " dodged!")
 				else:
-					update_turtle.write(monster.get_name() + " took " + str(damage) + " damage!")
+					text(monster.get_name() + " took " + str(damage) + " damage!")
 				turtle.update()
 				time.sleep(1)
 				update_turtle.clear()
 				turtle.update()
 			#Otherwise, we set hero defense to true.
-			elif global_index == "1":
-				#This variable is inacessable so I will need to rewrite this.
+			if global_index == 1:
+				print("defending!")
 				hero_defense = True
+				text(hero.get_name() + " braced for impact!")
+				turtle.update()
+				time.sleep(1)
+				update_turtle.clear()
+				turtle.update()
 
-			#We pass if the index is 2.
-			elif global_index == "2":
-				cast(hero, monster,"p", monster_defense)
-				update_turtle.write(hero.get_name() + " cast a spell on " + monster.get_name() + "!")
+			#We cast a spell.
+			elif global_index == 2:
+				damage = cast(hero, monster,"p", monster_defense)
+				text(hero.get_name() + " cast a spell on " + monster.get_name() + "!")
 				turtle.update()
 				time.sleep(1)
 				update_turtle.clear()
 				turtle.update()
 				if damage <= 0:
-					update_turtle.write(monster.get_name() + " took no damage!")
+					text(monster.get_name() + " took no damage!")
 				elif damage == 101:
-					update_turtle.write("But " + hero.get_name() + " didn't have enough MP!")
+					text("But " + hero.get_name() + " didn't have enough MP!")
 				else:
-					update_turtle.write(monster.get_hp() + " took " + damage + " damage!")
+					text(monster.get_name() + " took " + str(damage) + " damage!")
 				turtle.update()
 				time.sleep(1)
 				update_turtle.clear()
 				turtle.update()
 			#If the index is 3, we end combat.
-			elif global_index == "3":
-				#This doesn't actually work.
-				end_combat()
-				return
+			elif global_index == 3:
+				#Replacing this with a combat heal
+				hp = random.randint(1,10)
+				start_hp = hero.get_hp()
+				hero.heal(hp)
+				end_hp = hero.get_hp()
+				total = end_hp - start_hp
+				text(hero.get_name() + " healed " + str(total) + " health!")
+				turtle.update()
+				time.sleep(1)
+				update_turtle.clear()
+				update_hp(window, "h", hero.get_hp())
+				turtle.update()
+
 			update_hp(window,"m", monster.get_hp())
 			turtle.update()
 			window.update()
 			if monster.get_hp() > 0:
-				update_turtle.write(monster.get_name() + " attacked " + hero.get_name() + "!")
+				text(monster.get_name() + " attacked " + hero.get_name() + "!")
 				turtle.update()
 				time.sleep(1)
 				update_turtle.clear()
 				turtle.update()
 				damage = attack(hero, monster, "e", hero_defense)
 				if damage <= 0:
-					update_turtle.write(hero.get_name() + " took no damage!")
+					text(hero.get_name() + " took no damage!")
 				elif damage == 100:
-					update_turtle.write(hero.get_name() + " dodged!")
+					text(hero.get_name() + " dodged!")
 				else:
-					update_turtle.write(hero.get_name() + " took " + str(damage) + " damage!")
+					text(hero.get_name() + " took " + str(damage) + " damage!")
 				update_hp(window, "h", hero.get_hp())
 				turtle.update()
 				time.sleep(1)
@@ -760,8 +828,10 @@ def run_combat(window, hero):
 		#We set the combat_return.
 		combat_return = "e"
 		#If the monster hp is 0, we end combat and return.
+		if hero.get_hp() <= 0:
+			lose()
 		if monster.get_hp() <= 0:
-			update_turtle.write(monster.get_name() + " was defeated!")
+			text(monster.get_name() + " was defeated!")
 			turtle.update()
 			time.sleep(1)
 			update_turtle.clear()
@@ -834,6 +904,8 @@ def tile_to_screen(row, col):
 #This is the main function where the movement logic happens.
 def main():
 	#We initalise the global variables.
+	name = ask_player_name()
+
 	global global_cursor
 	global pen
 	global game_window
@@ -877,9 +949,8 @@ def main():
 	update_turtle = turtle.Turtle()
 	update_turtle.penup()
 	update_turtle.hideturtle()
-	update_turtle.goto(100, -100)
 	#We create a hero object.
-	main_hero = Hero("Yusha",10,10,5,4,5,10,"Sword")
+	main_hero = Hero(str(name),10,10,5,4,5,10,"Sword")
 	#We set the window to react to up and down inputs.
 	window.listen()
 	window.onkey(move_up, "Up")
