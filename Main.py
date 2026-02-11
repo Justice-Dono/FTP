@@ -475,6 +475,56 @@ def attack(hero, enemy, attacker, defense):
 		damage = abs(ending_hp - starting_hp)
 		return damage
 
+def cast(hero, enemy, attacker, defense):
+	#If the attack is initiated by the player, the attacker variable should read "p"
+	if attacker == "p":
+		#We get the enemy's hp.
+		starting_hp = enemy.get_hp()
+		#We get the hero and the monster's strength.
+		st = hero.get_int()
+		df = enemy.get_int()
+		if defense == True:
+			#If the monster is defending, we multiply the monster's defense by 2.
+			df = df *2
+		#We roll random numbers based on the strength to determine final damage.
+		st = random.randint(0,st)
+		df = random.randint(0,df)
+		df = math.ceil(df /2)
+		if(st - df < 0):
+			#We can do no less than 0 damage.
+			st = 0
+		else:
+			st = st - df
+		#Enemy takes damage by the final value.
+		dodge = enemy.get_lck()
+		chance = random.randint(0,(dodge + 2))
+		if chance >= dodge:
+			return 100
+		enemy.damage(st)
+		ending_hp = enemy.get_hp()
+		damage = abs(ending_hp - starting_hp)
+		#We return the amount of damage the enemy took.
+		return damage 
+	#This function repeats if the attacker if the enemy, but with the roles swapped.
+	if attacker == "e":
+		starting_hp = hero.get_hp()
+		st = enemy.get_int()
+		df = hero.get_int()
+		st = random.randint(0,st)
+		df = random.randint(0,df)
+		df = math.ceil(df /2)
+		if(st - df < 0):
+			st = 0
+		else:
+			st = st - df
+		dodge = hero.get_lck()
+		chance = random.randint(0,(dodge + 2))
+		if chance >= dodge:
+			return 100
+		hero.damage(st)
+		ending_hp = hero.get_hp()
+		damage = abs(ending_hp - starting_hp)
+		return damage
 #This function is adapted from the poorly named CTP. It works mostly the same, but with a lot more global imports.
 def run_combat(window, hero):
 	global STATE
@@ -525,8 +575,6 @@ def run_combat(window, hero):
 	#We create a monster. In the future it might even be a different monster.
 	monster = Monster("Slime", 3, 1, 1, 2, 6, 3)
 	#We create defense variables for the monster and hero, but it doesn't work.
-	hero_defense = False
-	monster_defense = False
 	#We set the window to listen, and move the combat cursor.
 	window.listen()
 	window.onkey(enter, "Return")
@@ -546,9 +594,24 @@ def run_combat(window, hero):
 			print("Doing action")
 			if global_index == 0 :
 				#We attack the enemy.
+				update_turtle.write(hero.get_name + " attacked the " + monster.get_name() + "!")
+				turtle.update()
+				time.sleep(1)
+				update_turtle.clear()
+				turtle.update()
+				chance = random.randint(0,1)
+				if chance == 1:
+					monster_defense = True
+				update_turtle.write(monster.get_name + " braced for impact!")
+				turtle.update()
+				time.sleep(1)
+				update_turtle.clear
+				turtle.update()
 				damage = attack(hero, monster, "p", monster_defense)
 				if damage <= 0:
 					update_turtle.write(monster.get_name() + " took no damage!")
+				elif damage == 100:
+					update_turtle.write(monster.get_name() + " dodged!")
 				else:
 					update_turtle.write(monster.get_name() + " took " + str(damage) + " damage!")
 				turtle.update()
@@ -568,8 +631,15 @@ def run_combat(window, hero):
 				end_combat()
 				return
 			if monster.get_hp() > 0:
-				attack(hero, monster, "e", hero_defense)
+				damage = attack(hero, monster, "e", hero_defense)
+				if damage <= 0:
+					update_turtle.write(hero.get_name() + " took no damage!")
+				elif damage == -99:
+					update_turtle.write(hero.get_name() + " dodged!")
+				else:
+					update_turtle.write(hero.get_name() + " took " + str(damage) + " damage!")
 			hero_defense = False
+			monster_defense = False
 		#We set the combat_return.
 		combat_return = "e"
 		#If the monster hp is 0, we end combat and return.
