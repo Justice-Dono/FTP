@@ -1,3 +1,4 @@
+import time
 import turtle
 import tkinter as tk
 import random
@@ -545,8 +546,15 @@ def run_combat(window, hero):
 			print("Doing action")
 			if global_index == 0 :
 				#We attack the enemy.
-				attack(hero, monster, "p", monster_defense)
-
+				damage = attack(hero, monster, "p", monster_defense)
+				if damage <= 0:
+					update_turtle.write(monster.get_name() + " took no damage!")
+				else:
+					update_turtle.write(monster.get_name() + " took " + str(damage) + " damage!")
+				turtle.update()
+				time.sleep(1)
+				update_turtle.clear()
+				turtle.update()
 			#Otherwise, we set hero defense to true.
 			elif global_index == "1":
 				#This variable is inacessable so I will need to rewrite this.
@@ -559,12 +567,18 @@ def run_combat(window, hero):
 				#This doesn't actually work.
 				end_combat()
 				return
-			attack(hero, monster, "e", hero_defense)
+			if monster.get_hp() > 0:
+				attack(hero, monster, "e", hero_defense)
 			hero_defense = False
 		#We set the combat_return.
 		combat_return = "e"
 		#If the monster hp is 0, we end combat and return.
 		if monster.get_hp() <= 0:
+			update_turtle.write(monster.get_name() + " was defeated!")
+			turtle.update()
+			time.sleep(1)
+			update_turtle.clear()
+			turtle.update()
 			end_combat()
 			return
 		window.update()
