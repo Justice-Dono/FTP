@@ -669,8 +669,6 @@ def run_combat(window, hero):
 				time.sleep(1)
 				update_turtle.clear()
 				turtle.update()
-
-
 			#If the index is 3, we end combat.
 			elif global_index == "3":
 				#This doesn't actually work.
