@@ -781,6 +781,8 @@ def run_combat(window, hero):
 					text(monster.get_name() + " took no damage!")
 				elif damage == 101:
 					text("But " + hero.get_name() + " didn't have enough MP!")
+				elif damage == 100:
+					text(monster.get_name() + " dodged!")
 				else:
 					text(monster.get_name() + " took " + str(damage) + " damage!")
 				turtle.update()
