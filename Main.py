@@ -53,6 +53,8 @@ global monster_name
 monster_name = None
 global hero_hp
 hero_hp = None
+global decoration
+decoration = None
 global monster_hp
 monster_hp = None
 
@@ -477,7 +479,27 @@ def move_right():
 		run_combat(game_window, main_hero)
 	return
 
+def decorate(name):
+	NAMES = ["Slime", "She-slime", "Bubble Slime", "Healslime", "Cureslime", "Seaslime", "Shell Slime", "King Slime"]
 
+	filename = None
+	if name == NAMES[0]:
+		return None
+	elif name == NAMES[1]:
+		return None
+	elif name == NAMES[2]:
+		filename = resource_path()
+	elif name == NAMES[3]:
+		filename = resource_path()
+	elif name == NAMES[4]:
+		filename = resource_path()
+	elif name == NAMES[5]:
+		filename = resource_path()
+	elif name == NAMES[6]:
+		filename = resource_path()
+	elif name == NAMES[7]:
+		filename = resource_path()
+	return filename
 #This function loads the map.
 def load_map(filename):
 	global tile_map, map_rows, map_cols, floor, camera_row, camera_col
@@ -645,7 +667,7 @@ def cast(hero, enemy, attacker, defense):
 #This function is adapted from the poorly named CTP. It works mostly the same, but with a lot more global imports.
 def run_combat(window, hero):
 	global STATE
-	global global_cursor, global_index, combat_return, combat_cursor, COMBAT_POSITIONS, text_turtle, update_turtle, enemy_turtle, hero_name, hero_hp, monster_name, monster_hp
+	global global_cursor, global_index, combat_return, combat_cursor, COMBAT_POSITIONS, text_turtle, update_turtle, enemy_turtle,decoration, hero_name, hero_hp, monster_name, monster_hp
 	#We set the game state to combat.
 	STATE = "combat"
 	NAMES = ["Slime", "She-slime", "Bubble Slime", "Healslime", "Cureslime", "Seaslime", "Shell Slime", "King Slime"]
@@ -677,10 +699,6 @@ def run_combat(window, hero):
 	t_turtle = create_turtle(window, resource_path("Images/combat-text.gif"))
 	text_turtle = t_turtle
 	text_turtle.teleport(-200, -200)
-	#We create a turtle for the enemy image.
-	e_turtle = create_turtle(window, resource_path("Images/Slime.gif"))
-	enemy_turtle = e_turtle
-	enemy_turtle.penup()
 	#We set the text x and y, and base the combat positions off of that.
 	text_x = text_turtle.xcor()
 	text_y = text_turtle.ycor()
@@ -703,6 +721,16 @@ def run_combat(window, hero):
 	strength = random.randint(1,7)
 	mon_int = random.randint(1,5) 
 	monster = Monster(NAMES[new_name], hp, 1, strength, mon_int, 10, 3)
+	decoration_name = decorate(monster.get_name())
+	if monster.get_name() == NAMES[1]:
+		e_turtle = create_turtle(window, resource_path("Images/SheSlime.gif"))
+	elif monster.get_name() == NAMES[0]:
+		e_turtle = create_turtle(window, resource_path("Images/Slime.gif"))
+	else:
+		e_turtle = create_turtle(window, resource_path("Images/Slime.gif"))
+		decoration_name = decorate(monster.get_name())
+	enemy_turtle = e_turtle
+	enemy_turtle.penup()
 	#We create defense variables for the monster and hero, but it doesn't work.
 	#We set the window to listen, and move the combat cursor.
 	window.listen()
