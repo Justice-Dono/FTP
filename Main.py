@@ -4,6 +4,7 @@ import tkinter as tk
 from tkinter import messagebox
 import random
 import math
+import pygame
 import csv
 import sys
 import os
@@ -725,6 +726,16 @@ def run_combat(window, hero):
 		e_turtle = create_turtle(window, resource_path("Images/Slime.gif"))
 	elif monster.get_name() == NAMES[2]:
 		e_turtle = create_turtle(window, resource_path("Images/BubbleSlime.gif"))
+	elif monster.get_name() == NAMES[3]:
+		e_turtle = create_turtle(window, resource_path("Images/HealSlime.gif"))
+	elif monster.get_name() == NAMES[4]:
+		e_turtle = create_turtle(window, resource_path("Images/CureSlime.gif"))
+	elif monster.get_name() == NAMES[5]:
+		e_turtle = create_turtle(window, resource_path("Images/SeaSlime.gif"))
+	elif monster.get_name() == NAMES[6]:
+		e_turtle = create_turtle(window, resource_path("Images/ShellSlime.gif"))
+	elif monster.get_name() == NAMES[7]:
+		e_turtle = create_turtle(window, resource_path("Images/KingSlime.gif"))
 	else:
 		e_turtle = create_turtle(window, resource_path("Images/Slime.gif"))
 	enemy_turtle = e_turtle
