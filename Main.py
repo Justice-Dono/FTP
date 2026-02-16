@@ -484,27 +484,6 @@ def move_right():
 		run_combat(game_window, main_hero)
 	return
 
-def decorate(name):
-	NAMES = ["Slime", "She-slime", "Bubble Slime", "Healslime", "Cureslime", "Seaslime", "Shell Slime", "King Slime"]
-
-	filename = None
-	if name == NAMES[0]:
-		return None
-	elif name == NAMES[1]:
-		return None
-	elif name == NAMES[2]:
-		filename = resource_path()
-	elif name == NAMES[3]:
-		filename = resource_path()
-	elif name == NAMES[4]:
-		filename = resource_path()
-	elif name == NAMES[5]:
-		filename = resource_path()
-	elif name == NAMES[6]:
-		filename = resource_path()
-	elif name == NAMES[7]:
-		filename = resource_path()
-	return filename
 #This function loads the map.
 def load_map(filename):
 	global tile_map, map_rows, map_cols, floor, camera_row, camera_col
