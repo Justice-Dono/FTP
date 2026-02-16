@@ -4,7 +4,8 @@ import tkinter as tk
 from tkinter import messagebox
 import random
 import math
-import pygame
+#I could not get VS Code to see pygame, but it compiles so we are just going to ignore it.
+import pygame # type: ignore
 import csv
 import sys
 import os
@@ -81,6 +82,11 @@ TILE_COLORS = {
 }
 
 import tkinter.simpledialog as simpledialog
+
+def play_music(filename):
+	pygame.mixer.music.load(resource_path(filename))
+	pygame.mixer.music.play(-1)
+	return
 
 def win():
 	print("You win!")
@@ -958,6 +964,8 @@ def main():
 	#game_font = "PressStart2P"
 	floorstring = "floor" + str(floor) + ".csv"
 	load_map(resource_path(floorstring))
+	pygame.mixer.init()
+	play_music("Music/OST1.mp3")
 	#We create the window for the game screen.
 	window = turtle.Screen()
 	hero = Hero("Yusha", 10, 10, 5, 4, 5, 10, "Sword")
