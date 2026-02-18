@@ -655,6 +655,7 @@ def run_combat(window, hero):
 	#We set the game state to combat.
 	STATE = "combat"
 	NAMES = ["Slime", "She-slime", "Bubble Slime", "Healslime", "Cureslime", "Seaslime", "Shell Slime", "King Slime"]
+	STATS = [[1,1,2,1,10,3],[2,2,1,10,4],[3,1,2,2,10,2],[3,4,1,5,10,3],[4,5,1,6,10,2],[5,1,3,2,10,4],[5,1,4,2,10,4],[7,1,4,2,10,5]]
 	length = len(NAMES)
 	#We hide the tile maze.
 	pen.clear()
@@ -701,10 +702,8 @@ def run_combat(window, hero):
 	update_turtle.goto(-137, -125)
 	#We create a monster. In the future it might even be a different monster.
 	new_name = random.randint(0, length -1)
-	hp = random.randint(1,6)
-	strength = random.randint(1,7)
-	mon_int = random.randint(1,5) 
-	monster = Monster(NAMES[new_name], hp, 1, strength, mon_int, 10, 3)
+	local_stats = STATS[new_name]
+	monster = Monster(NAMES[new_name], local_stats[0], local_stats[1], local_stats[2], local_stats[3], local_stats[4], local_stats[5])
 	if monster.get_name() == NAMES[1]:
 		e_turtle = create_turtle(window, resource_path("Images/SheSlime.gif"))
 	elif monster.get_name() == NAMES[0]:
@@ -996,4 +995,3 @@ def main():
 	
 #This is the main function.
 main()
-
