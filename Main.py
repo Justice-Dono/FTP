@@ -88,6 +88,11 @@ def play_music(filename):
 	pygame.mixer.music.play(-1)
 	return
 
+def play_sound(filename):
+	sound = pygame.mixer.Sound(resource_path(filename))
+	sound.play()
+	return
+
 def win():
 	print("You win!")
 	global game_window
@@ -783,6 +788,7 @@ def run_combat(window, hero):
 					text(monster.get_name() + " took no damage!")
 				elif damage == 100:
 					text(monster.get_name() + " dodged!")
+					play_sound("Music/miss.flac")
 				else:
 					text(monster.get_name() + " took " + str(damage) + " damage!")
 				turtle.update()
@@ -813,6 +819,7 @@ def run_combat(window, hero):
 					text("But " + hero.get_name() + " didn't have enough MP!")
 				elif damage == 100:
 					text(monster.get_name() + " dodged!")
+					play_sound("Music/miss.flac")
 				else:
 					text(monster.get_name() + " took " + str(damage) + " damage!")
 				turtle.update()
@@ -848,6 +855,7 @@ def run_combat(window, hero):
 					text(hero.get_name() + " took no damage!")
 				elif damage == 100:
 					text(hero.get_name() + " dodged!")
+					play_sound("Music/miss.flac")
 				else:
 					text(hero.get_name() + " took " + str(damage) + " damage!")
 				update_hp(window, "h", hero.get_hp())
