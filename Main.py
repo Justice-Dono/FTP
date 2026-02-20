@@ -651,11 +651,11 @@ def cast(hero, enemy, attacker, defense):
 #This function is adapted from the poorly named CTP. It works mostly the same, but with a lot more global imports.
 def run_combat(window, hero):
 	global STATE
-	global global_cursor, global_index, combat_return, combat_cursor, COMBAT_POSITIONS, text_turtle, update_turtle, enemy_turtle, hero_name, hero_hp, monster_name, monster_hp
+	global global_cursor, global_index, combat_return, combat_cursor, COMBAT_POSITIONS, text_turtle, update_turtle, enemy_turtle, hero_name, hero_hp, monster_name, monster_hp, floor
 	#We set the game state to combat.
 	STATE = "combat"
 	NAMES = ["Slime", "She-slime", "Bubble Slime", "Healslime", "Cureslime", "Seaslime", "Shell Slime", "King Slime"]
-	STATS = [[1,1,2,1,10,3],[2,2,1,10,4],[3,1,2,2,10,2],[3,4,1,5,10,3],[4,5,1,6,10,2],[5,1,3,2,10,4],[5,1,4,2,10,4],[7,1,4,2,10,5]]
+	STATS = [[1,1,2,1,10,3],[2,2,1,2,10,4],[3,1,2,2,10,2],[3,4,1,5,10,3],[4,5,1,6,10,2],[5,1,3,2,10,4],[5,1,4,2,10,4],[7,1,4,2,10,5]]
 	length = len(NAMES)
 	#We hide the tile maze.
 	pen.clear()
@@ -701,7 +701,16 @@ def run_combat(window, hero):
 	update_turtle.hideturtle()
 	update_turtle.goto(-137, -125)
 	#We create a monster. In the future it might even be a different monster.
+	
 	new_name = random.randint(0, length -1)
+	if floor == 1:
+		new_name = random.randint(0, length - 6)
+	elif floor == 2:
+		new_name = random.randint(0, length - 4)
+	elif floor == 3:
+		new_name = random.randint(2, length -2)
+	elif floor == 4:
+		new_name = random.randint(3, length - 1)
 	local_stats = STATS[new_name]
 	monster = Monster(NAMES[new_name], local_stats[0], local_stats[1], local_stats[2], local_stats[3], local_stats[4], local_stats[5])
 	if monster.get_name() == NAMES[1]:
