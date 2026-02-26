@@ -13,6 +13,8 @@ import os
 #This is the cursor turtle used for selecting actions.
 global global_cursor
 global_cursor = None
+global enemy_counter 
+enemy_counter = 0
 #This is the main_hero used for combat and exploration.
 global main_hero 
 main_hero = None
@@ -78,7 +80,8 @@ TILE_COLORS = {
     1: "dimgray",     
     2: "royalblue",
 	3: "hotpink",
-	4: "gold"
+	4: "gold",
+	5: "lightgray"
 }
 
 import tkinter.simpledialog as simpledialog
@@ -317,7 +320,7 @@ def combat_down():
 
 #This function scrolls the world down, giving the effect that the turtle has moved up.
 def move_up():
-	global STATE, floor
+	global STATE, floor, enemy_counter
 	if STATE != "explore":
 		return
 	global camera_row
@@ -344,10 +347,13 @@ def move_up():
 		draw_grid()
 		global_cursor.setheading(90)
 		turtle.update()
+		enemy_counter = 0
 		return
 	elif tile == 4:
 		win()
-
+	elif tile == 5:
+		combat_chance(game_window, main_hero)
+		enemy_counter = enemy_counter + 1
 	#We subtract one from the camera row, update the heading, and print the chance.
 	main_hero.heal(1)
 	camera_row -= 1
@@ -361,7 +367,7 @@ def move_up():
 
 #This function moves the world up, giving the illusion that the turtle has moved down.
 def move_down():
-	global STATE, floor
+	global STATE, floor, enemy_counter
 	if STATE != "explore":
 		return
 	global camera_row
@@ -388,10 +394,14 @@ def move_down():
 		draw_grid()
 		global_cursor.setheading(270)
 		turtle.update()
+		enemy_counter = 0
 		return
 	elif tile == 4:
 		win()
 		return
+	elif tile == 5:
+		run_combat(game_window, main_hero)
+		enemy_counter = enemy_counter + 1
 	#Otherwise, we move the camera and roll for combat.
 	main_hero.heal(1)
 	camera_row += 1
@@ -405,7 +415,7 @@ def move_down():
 
 #This function moves the world right, giving the illusion that the turtle has moved.
 def move_left():
-	global STATE, floor
+	global STATE, floor, enemy_counter
 	if STATE != "explore":
 		return
 	global camera_row
@@ -432,10 +442,14 @@ def move_left():
 		draw_grid()
 		global_cursor.setheading(180)
 		turtle.update()
+		enemy_counter = 0
 		return
 	elif tile == 4:
 		win()
 		return
+	elif tile == 5:
+		run_combat(game_window, main_hero)
+		enemy_counter = enemy_counter + 1
 	#We move the turtle and update it's facing.
 	main_hero.heal(1)
 	camera_col -= 1
@@ -449,7 +463,7 @@ def move_left():
 
 #We move the world left to give the illusion that the turtle is moving.
 def move_right():
-	global STATE, floor
+	global STATE, floor, enemy_counter
 	if STATE != "explore":
 		return
 	global camera_row
@@ -474,10 +488,14 @@ def move_right():
 		draw_grid()
 		global_cursor.setheading(0)
 		turtle.update()
+		enemy_counter = enemy_counter + 1
 		return
 	elif tile == 4:
 		win()
 		return
+	elif tile == 5:
+		run_combat(game_window, main_hero)
+		enemy_counter = enemy_counter + 1
 	#Otherwise, we move the turtle.
 	main_hero.heal(1)
 	camera_col += 1
