@@ -14,7 +14,7 @@ import os
 global global_cursor
 global_cursor = None
 global enemy_counter 
-enemy_counter = 0
+enemy_counter = -1
 #This is the main_hero used for combat and exploration.
 global main_hero 
 main_hero = None
@@ -347,22 +347,19 @@ def move_up():
 		draw_grid()
 		global_cursor.setheading(90)
 		turtle.update()
-		enemy_counter = 0
+		enemy_counter = -1
 		return
 	elif tile == 4:
 		win()
-	elif tile == 5:
-		combat_chance(game_window, main_hero)
-		enemy_counter = enemy_counter + 1
 	#We subtract one from the camera row, update the heading, and print the chance.
 	main_hero.heal(1)
 	camera_row -= 1
 	draw_grid()
 	global_cursor.setheading(90)
 	turtle.update()
-	chance = combat_chance(tile)
-	if chance :
+	if tile == 5:
 		run_combat(game_window, main_hero)
+		enemy_counter = enemy_counter + 1
 	return
 
 #This function moves the world up, giving the illusion that the turtle has moved down.
@@ -394,23 +391,20 @@ def move_down():
 		draw_grid()
 		global_cursor.setheading(270)
 		turtle.update()
-		enemy_counter = 0
+		enemy_counter = -1
 		return
 	elif tile == 4:
 		win()
 		return
-	elif tile == 5:
-		run_combat(game_window, main_hero)
-		enemy_counter = enemy_counter + 1
 	#Otherwise, we move the camera and roll for combat.
 	main_hero.heal(1)
 	camera_row += 1
 	draw_grid()
 	global_cursor.setheading(270)
 	turtle.update()
-	chance = combat_chance(tile)
-	if chance:
+	if tile == 5:
 		run_combat(game_window, main_hero)
+		enemy_counter = enemy_counter + 1
 	return
 
 #This function moves the world right, giving the illusion that the turtle has moved.
@@ -442,23 +436,20 @@ def move_left():
 		draw_grid()
 		global_cursor.setheading(180)
 		turtle.update()
-		enemy_counter = 0
+		enemy_counter = -1
 		return
 	elif tile == 4:
 		win()
 		return
-	elif tile == 5:
-		run_combat(game_window, main_hero)
-		enemy_counter = enemy_counter + 1
 	#We move the turtle and update it's facing.
 	main_hero.heal(1)
 	camera_col -= 1
 	draw_grid()
 	global_cursor.setheading(180)
 	turtle.update()
-	chance = combat_chance(tile)
-	if chance:
+	if tile == 5:
 		run_combat(game_window, main_hero)
+		enemy_counter = enemy_counter + 1
 	return
 
 #We move the world left to give the illusion that the turtle is moving.
@@ -488,23 +479,20 @@ def move_right():
 		draw_grid()
 		global_cursor.setheading(0)
 		turtle.update()
-		enemy_counter = enemy_counter + 1
+		enemy_counter = -1
 		return
 	elif tile == 4:
 		win()
 		return
-	elif tile == 5:
-		run_combat(game_window, main_hero)
-		enemy_counter = enemy_counter + 1
 	#Otherwise, we move the turtle.
 	main_hero.heal(1)
 	camera_col += 1
 	draw_grid()
 	global_cursor.setheading(0)
 	turtle.update()
-	chance = combat_chance(tile)
-	if chance:
+	if tile == 5:
 		run_combat(game_window, main_hero)
+		enemy_counter = enemy_counter + 1
 	return
 
 #This function loads the map.
