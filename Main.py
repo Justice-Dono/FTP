@@ -260,6 +260,10 @@ def get_tile(row, col):
 	tile_col = tile_row[col]
 	#We return the tile's column.
 	return tile_col
+
+def set_tile(row, col, value):
+	global tile_map
+	tile_map[row][col] = value
 	
 #This function determines the chance of a player getting an encounter on a specific move.
 def combat_chance(tile):
@@ -358,6 +362,7 @@ def move_up():
 	global_cursor.setheading(90)
 	turtle.update()
 	if tile == 5:
+		set_tile(camera_row, camera_col, 0)
 		run_combat(game_window, main_hero)
 		enemy_counter = enemy_counter + 1
 	return
@@ -403,6 +408,7 @@ def move_down():
 	global_cursor.setheading(270)
 	turtle.update()
 	if tile == 5:
+		set_tile(camera_row, camera_col, 0)
 		run_combat(game_window, main_hero)
 		enemy_counter = enemy_counter + 1
 	return
@@ -448,6 +454,7 @@ def move_left():
 	global_cursor.setheading(180)
 	turtle.update()
 	if tile == 5:
+		set_tile(camera_row, camera_col, 0)
 		run_combat(game_window, main_hero)
 		enemy_counter = enemy_counter + 1
 	return
@@ -491,6 +498,7 @@ def move_right():
 	global_cursor.setheading(0)
 	turtle.update()
 	if tile == 5:
+		set_tile(camera_row, camera_col, 0)
 		run_combat(game_window, main_hero)
 		enemy_counter = enemy_counter + 1
 	return
@@ -659,6 +667,7 @@ def cast(hero, enemy, attacker, defense):
 		ending_hp = hero.get_hp()
 		damage = abs(ending_hp - starting_hp)
 		return damage
+	
 #This function is adapted from the poorly named CTP. It works mostly the same, but with a lot more global imports.
 def run_combat(window, hero):
 	global STATE
