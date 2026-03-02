@@ -351,7 +351,7 @@ def move_up():
 		draw_grid()
 		global_cursor.setheading(90)
 		turtle.update()
-		enemy_counter = -1
+		enemy_counter = 0
 		return
 	elif tile == 4:
 		win()
@@ -396,7 +396,7 @@ def move_down():
 		draw_grid()
 		global_cursor.setheading(270)
 		turtle.update()
-		enemy_counter = -1
+		enemy_counter = 0
 		return
 	elif tile == 4:
 		win()
@@ -442,7 +442,7 @@ def move_left():
 		draw_grid()
 		global_cursor.setheading(180)
 		turtle.update()
-		enemy_counter = -1
+		enemy_counter = 0
 		return
 	elif tile == 4:
 		win()
@@ -486,7 +486,7 @@ def move_right():
 		draw_grid()
 		global_cursor.setheading(0)
 		turtle.update()
-		enemy_counter = -1
+		enemy_counter = 0
 		return
 	elif tile == 4:
 		win()
@@ -676,7 +676,44 @@ def run_combat(window, hero):
 	STATE = "combat"
 	NAMES = ["Slime", "She-slime", "Bubble Slime", "Healslime", "Cureslime", "Seaslime", "Shell Slime", "King Slime"]
 	STATS = [[1,1,2,1,10,3],[2,2,1,2,10,4],[3,1,2,2,10,2],[3,4,1,5,10,3],[4,5,1,6,10,2],[5,1,3,2,10,4],[5,1,4,2,10,4],[7,1,4,2,10,5]]
-	length = len(NAMES)
+	if floor == 2:
+		newstats = []
+		newstats.append(STATS[2])
+		newstats.append(STATS[3])
+		newstats.append(STATS[4])
+		newstats.append(STATS[6])
+		STATS = newstats
+		newnames = []
+		newnames.append(NAMES[2])
+		newnames.append(NAMES[3])
+		newnames.append(NAMES[4])
+		newnames.append(NAMES[6])
+		NAMES = newnames
+	elif floor == 3:
+		newstats = []
+		newstats.append(STATS[4])
+		newstats.append(STATS[6])
+		newstats.append(STATS[5])
+		newstats.append(STATS[6])
+		STATS = newstats
+		newnames = []
+		newnames.append(NAMES[4])
+		newnames.append(NAMES[6])
+		newnames.append(NAMES[5])
+		newnames.append(NAMES[6])
+		NAMES = newnames
+	elif floor == 4:
+		newstats = []
+		newstats.append(STATS[5])
+		newstats.append(STATS[6])
+		newstats.append(STATS[7])
+		newstats.append(STATS[7])
+		STATS = newstats
+		newnames = []
+		newnames.append(NAMES[5])
+		newnames.append(NAMES[6])
+		newnames.append(NAMES[7])
+		newnames.append(NAMES[7])
 	#We hide the tile maze.
 	pen.clear()
 	global_cursor.hideturtle()
@@ -732,7 +769,7 @@ def run_combat(window, hero):
 	print("Enemy counter is: " + str(enemy_counter))
 	local_stats = STATS[enemy_counter]
 	monster = Monster(NAMES[enemy_counter], local_stats[0], local_stats[1], local_stats[2], local_stats[3], local_stats[4], local_stats[5])
-
+	NAMES = ["Slime", "She-slime", "Bubble Slime", "Healslime", "Cureslime", "Seaslime", "Shell Slime", "King Slime"]
 	if monster.get_name() == NAMES[1]:
 		e_turtle = create_turtle(window, resource_path("Images/SheSlime.gif"))
 	elif monster.get_name() == NAMES[0]:
