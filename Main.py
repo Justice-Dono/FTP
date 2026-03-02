@@ -14,7 +14,7 @@ import os
 global global_cursor
 global_cursor = None
 global enemy_counter 
-enemy_counter = -1
+enemy_counter = 0
 #This is the main_hero used for combat and exploration.
 global main_hero 
 main_hero = None
@@ -671,7 +671,7 @@ def cast(hero, enemy, attacker, defense):
 #This function is adapted from the poorly named CTP. It works mostly the same, but with a lot more global imports.
 def run_combat(window, hero):
 	global STATE
-	global global_cursor, global_index, combat_return, combat_cursor, COMBAT_POSITIONS, text_turtle, update_turtle, enemy_turtle, hero_name, hero_hp, monster_name, monster_hp, floor
+	global global_cursor, global_index, combat_return, combat_cursor, COMBAT_POSITIONS, text_turtle, update_turtle, enemy_turtle, hero_name, hero_hp, monster_name, monster_hp, floor, enemy_counter
 	#We set the game state to combat.
 	STATE = "combat"
 	NAMES = ["Slime", "She-slime", "Bubble Slime", "Healslime", "Cureslime", "Seaslime", "Shell Slime", "King Slime"]
@@ -721,18 +721,18 @@ def run_combat(window, hero):
 	update_turtle.hideturtle()
 	update_turtle.goto(-137, -125)
 	#We create a monster. In the future it might even be a different monster.
-	
-	new_name = random.randint(0, length -1)
-	if floor == 1:
-		new_name = random.randint(0, length - 6)
-	elif floor == 2:
-		new_name = random.randint(0, length - 4)
-	elif floor == 3:
-		new_name = random.randint(2, length -2)
-	elif floor == 4:
-		new_name = random.randint(3, length - 1)
-	local_stats = STATS[new_name]
-	monster = Monster(NAMES[new_name], local_stats[0], local_stats[1], local_stats[2], local_stats[3], local_stats[4], local_stats[5])
+	#if floor == 1:
+	#	new_name = random.randint(0, length - 6)
+	#elif floor == 2:
+	#	new_name = random.randint(0, length - 4)
+	#elif floor == 3:
+	#	new_name = random.randint(2, length -2)
+	#elif floor == 4:
+	#	new_name = random.randint(3, length - 1)
+	print("Enemy counter is: " + str(enemy_counter))
+	local_stats = STATS[enemy_counter]
+	monster = Monster(NAMES[enemy_counter], local_stats[0], local_stats[1], local_stats[2], local_stats[3], local_stats[4], local_stats[5])
+
 	if monster.get_name() == NAMES[1]:
 		e_turtle = create_turtle(window, resource_path("Images/SheSlime.gif"))
 	elif monster.get_name() == NAMES[0]:
