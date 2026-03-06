@@ -144,7 +144,7 @@ def text(local_text):
 	global update_turtle
 	update_turtle.write(local_text, font=("Arial", 16, "bold"))
 	turtle.update()
-	
+
 #Class for the hero object. Probably could be made as a subclass of a larger character class.
 class Hero:
 	def __init__(self, name, hp, mp, st, int, speed, lck, items):
@@ -358,6 +358,7 @@ def move_up():
 		turtle.update()
 		return
 	elif tile == 3:
+		#If the tile is a 3, we transition to the next floor.
 		main_hero.heal(1)
 		floor = floor + 1
 		floorstring = "floor" + str(floor) + ".csv"
@@ -365,6 +366,7 @@ def move_up():
 		draw_grid()
 		global_cursor.setheading(90)
 		turtle.update()
+		#We set the counter to 0.
 		enemy_counter = 0
 		return
 	elif tile == 4:
@@ -376,6 +378,7 @@ def move_up():
 	global_cursor.setheading(90)
 	turtle.update()
 	if tile == 5:
+		#If the tile is 5, we run a set combat encounter.
 		set_tile(camera_row, camera_col, 0)
 		run_combat(game_window, main_hero)
 		enemy_counter = enemy_counter + 1
@@ -403,6 +406,7 @@ def move_down():
 		turtle.update()
 		return
 	elif tile == 3:
+		#If the tile is 3, we transition to a new floor.
 		main_hero.heal(1)
 		floor = floor + 1
 		floorstring = "floor" + str(floor) + ".csv"
@@ -422,6 +426,7 @@ def move_down():
 	global_cursor.setheading(270)
 	turtle.update()
 	if tile == 5:
+		#If the tile is 5, we play a set combat encounter.
 		set_tile(camera_row, camera_col, 0)
 		run_combat(game_window, main_hero)
 		enemy_counter = enemy_counter + 1
@@ -449,6 +454,7 @@ def move_left():
 		turtle.update()
 		return
 	elif tile == 3:
+		#If the tile is 3, we transition to the next floor.
 		main_hero.heal(1)
 		floor = floor + 1
 		floorstring = "floor" + str(floor) + ".csv"
@@ -468,6 +474,7 @@ def move_left():
 	global_cursor.setheading(180)
 	turtle.update()
 	if tile == 5:
+		#If the tile is a 5, we run a set combat encounter.
 		set_tile(camera_row, camera_col, 0)
 		run_combat(game_window, main_hero)
 		enemy_counter = enemy_counter + 1
@@ -493,6 +500,7 @@ def move_right():
 		turtle.update()
 		return
 	elif tile == 3:
+		#If the tile is a 3, we transition to a set floor.
 		main_hero.heal(1)
 		floor = floor + 1
 		floorstring = "floor" + str(floor) + ".csv"
@@ -512,6 +520,7 @@ def move_right():
 	global_cursor.setheading(0)
 	turtle.update()
 	if tile == 5:
+		#If the tile is a 5, we run a set combat encounter.
 		set_tile(camera_row, camera_col, 0)
 		run_combat(game_window, main_hero)
 		enemy_counter = enemy_counter + 1
@@ -551,24 +560,31 @@ def create_turtle(window, shape):
 	local_turtle.shape(shape)
 	return local_turtle
 
+#This function updates the Hp turtle of the Hero or monster.
 def update_hp(window, name, hp):
 	global hero_hp, monster_hp
+	#If the hp is going to be less than 0, we set it to 0.
 	if hp <= 0:
 		hp = 0
 	if name == "h":
+		#We reset the HP turtle, then move it off screen.
 		hero_hp.reset()
 		hero_hp.teleport(10000,10000)
 		turtle.update()
+		#We then create a new turtle to replace the original turtle.
 		h_turtle = create_turtle(window, resource_path("Images/" + "hp" + str(hp) + ".gif"))
 		hero_hp = h_turtle
 		hero_hp.teleport(-200, 175)
+		#We move the turtle back into place, then we update the screen and turtle.
 		turtle.update()
 	if name == "m":
+		#If the name is m, we run the same process for the monster.
 		monster_hp.reset()
 		monster_hp.teleport(10000,10000)
 		turtle.update()
 		m_turtle = create_turtle(window, resource_path("Images/" + "hp" + str(hp) + ".gif"))
 		monster_hp = m_turtle
+		#We create a new turtle, then update the HP with the new value.
 		monster_hp.teleport(150, 175)
 		turtle.update()
 	return
@@ -690,6 +706,7 @@ def run_combat(window, hero):
 	STATE = "combat"
 	NAMES = ["Slime", "She-slime", "Bubble Slime", "Healslime", "Cureslime", "Seaslime", "Shell Slime", "King Slime"]
 	STATS = [[1,1,2,1,10,3],[2,2,1,2,10,4],[3,1,2,2,10,2],[3,4,1,5,10,3],[4,5,1,6,10,2],[5,1,3,2,10,4],[5,1,4,2,10,4],[7,1,4,2,10,5]]
+	#If the floor two, we set the enemy list to a custom array.
 	if floor == 2:
 		newstats = []
 		newstats.append(STATS[2])
@@ -703,6 +720,7 @@ def run_combat(window, hero):
 		newnames.append(NAMES[4])
 		newnames.append(NAMES[6])
 		NAMES = newnames
+	#If the floor is three, we set the enemy list to a custom array.
 	elif floor == 3:
 		newstats = []
 		newstats.append(STATS[4])
@@ -716,6 +734,7 @@ def run_combat(window, hero):
 		newnames.append(NAMES[5])
 		newnames.append(NAMES[6])
 		NAMES = newnames
+	#If the floor is four, we set the enemy list to a custom array.
 	elif floor == 4:
 		newstats = []
 		newstats.append(STATS[5])
@@ -743,9 +762,11 @@ def run_combat(window, hero):
 	cursor.penup()
 	combat_cursor = cursor
 	combat_cursor.showturtle()
+	#We create a hero turtle, then move it into place.
 	h_name = create_turtle(window, resource_path("Images/Hero.gif"))
 	hero_name = h_name
 	hero_name.teleport(-200, 250)
+	#We create a monster turtle, then we move it into place.
 	m_name = create_turtle(window, resource_path("Images/Enemy.gif"))
 	monster_name = m_name
 	monster_name.teleport(150, 250)
@@ -783,7 +804,9 @@ def run_combat(window, hero):
 	print("Enemy counter is: " + str(enemy_counter))
 	local_stats = STATS[enemy_counter]
 	monster = Monster(NAMES[enemy_counter], local_stats[0], local_stats[1], local_stats[2], local_stats[3], local_stats[4], local_stats[5])
+	#We load a list of the monster names.
 	NAMES = ["Slime", "She-slime", "Bubble Slime", "Healslime", "Cureslime", "Seaslime", "Shell Slime", "King Slime"]
+	#We assign the monster a turtle based on the name of the monster. If there is a spelling mistake this is will break, so I hope that it works.
 	if monster.get_name() == NAMES[1]:
 		e_turtle = create_turtle(window, resource_path("Images/SheSlime.gif"))
 	elif monster.get_name() == NAMES[0]:
@@ -801,6 +824,7 @@ def run_combat(window, hero):
 	elif monster.get_name() == NAMES[7]:
 		e_turtle = create_turtle(window, resource_path("Images/KingSlime.gif"))
 	else:
+		#As a fallback, we create a default slime.
 		e_turtle = create_turtle(window, resource_path("Images/Slime.gif"))
 	enemy_turtle = e_turtle
 	enemy_turtle.penup()
@@ -808,10 +832,12 @@ def run_combat(window, hero):
 	#We set the window to listen, and move the combat cursor.
 	window.listen()
 	window.onkey(enter, "Return")
+	#We create the combat cursor, then  allow it to move.
 	move(combat_cursor, 0, COMBAT_POSITIONS)
 	local_hp = hero.get_hp()
-	print(str(hero.get_hp()))
-	print(str(monster.get_hp()))
+	#print(str(hero.get_hp()))
+	#print(str(monster.get_hp()))
+	#We make the hero HP, then move it into place.
 	h_turtle = create_turtle(window, resource_path("Images/" + "hp" + str(local_hp) + ".gif"))
 	hero_hp = h_turtle
 	hero_hp.teleport(-200, 175)
@@ -841,21 +867,27 @@ def run_combat(window, hero):
 				time.sleep(1)
 				update_turtle.clear()
 				turtle.update()
-				chance = random.randint(0,1)
-				if chance == 1:
+				chance = random.randint(0,7)
+				#We roll a random chance for the monster to block.
+				if chance >= 6:
 					monster_defense = True
 					text(monster.get_name() + " braced for impact!")
 					turtle.update()
 					time.sleep(1)
 					update_turtle.clear()
 					turtle.update()
+				#We then roll an attack.
 				damage = attack(hero, monster, "p", monster_defense)
 				if damage <= 0:
+					#If the damage is 0, the monster took no damage.
+
 					text(monster.get_name() + " took no damage!")
 				elif damage == 100:
+					#If the damage is 100, the monster dodged and we play a sound effect.
 					text(monster.get_name() + " dodged!")
 					play_sound("Music/miss.flac")
 				else:
+					#Otherwise, we print the damage.
 					text(monster.get_name() + " took " + str(damage) + " damage!")
 				turtle.update()
 				time.sleep(1)
@@ -863,6 +895,7 @@ def run_combat(window, hero):
 				turtle.update()
 			#Otherwise, we set hero defense to true.
 			if global_index == 1:
+				#If the defence is set to true, we print out a defending string.
 				print("defending!")
 				hero_defense = True
 				text(hero.get_name() + " braced for impact!")
@@ -872,6 +905,7 @@ def run_combat(window, hero):
 				turtle.update()
 
 			#We cast a spell.
+			#This function is probably broken but I have not tested it enough. Shae founds some issues while playtesting that were hopefully fixed in my emergency patch.
 			elif global_index == 2:
 				damage = cast(hero, monster,"p", monster_defense)
 				text(hero.get_name() + " cast a spell on " + monster.get_name() + "!")
@@ -892,30 +926,33 @@ def run_combat(window, hero):
 				time.sleep(1)
 				update_turtle.clear()
 				turtle.update()
-			#If the index is 3, we end combat.
+			#This function attempts to be a combat heal, not going to update the graphic so it says run currently.
 			elif global_index == 3:
 				#Replacing this with a combat heal
-				hp = random.randint(1,10)
+				hp = random.randint(3,10)
 				start_hp = hero.get_hp()
 				hero.heal(hp)
 				end_hp = hero.get_hp()
 				total = end_hp - start_hp
+				#We heal a random ammount.
 				text(hero.get_name() + " healed " + str(total) + " health!")
 				turtle.update()
 				time.sleep(1)
 				update_turtle.clear()
 				update_hp(window, "h", hero.get_hp())
 				turtle.update()
-
+			#We update the monster HP.
 			update_hp(window,"m", monster.get_hp())
 			turtle.update()
 			window.update()
 			if monster.get_hp() > 0:
+				#We then run combat with the monster attacking the hero.
 				text(monster.get_name() + " attacked " + hero.get_name() + "!")
 				turtle.update()
 				time.sleep(1)
 				update_turtle.clear()
 				turtle.update()
+				#We calculate how much damage the hero took.
 				damage = attack(hero, monster, "e", hero_defense)
 				if damage <= 0:
 					text(hero.get_name() + " took no damage!")
@@ -1035,6 +1072,8 @@ def main():
 	window.title("Combat Window")
 	window.tracer(0)
 	game_window = window
+	#We create a turtle for the pen.
+	#I am not sure what the pen does anymore.
 	local_pen = turtle.Turtle()
 	local_pen.hideturtle()
 	local_pen.speed(0)
