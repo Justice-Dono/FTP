@@ -9,6 +9,7 @@ import pygame # type: ignore
 import csv
 import sys
 import os
+import tkinter.simpledialog as simpledialog
 
 #This is the cursor turtle used for selecting actions.
 global global_cursor
@@ -47,6 +48,7 @@ game_window = None
 #This tracks which floor the game is on.
 global floor
 floor = None
+#There are global variables below, some of them can probably be removed but I don't have the foresight to do that.
 global hero_defense
 hero_defense = False
 global monster_defense
@@ -84,9 +86,9 @@ TILE_COLORS = {
 	5: "lightgray"
 }
 
-import tkinter.simpledialog as simpledialog
-
+#This is a function that loads background music.
 def play_music(filename):
+	#We set the music to loop forever, and load it based on the resource path.
 	pygame.mixer.music.load(resource_path(filename))
 	pygame.mixer.music.play(-1)
 	return
