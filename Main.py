@@ -93,22 +93,30 @@ def play_music(filename):
 	pygame.mixer.music.play(-1)
 	return
 
+#This function plays a specific sounds effect once.
 def play_sound(filename):
+	#We create the sound, and then play it using the pygame mixer.
 	sound = pygame.mixer.Sound(resource_path(filename))
 	sound.play()
 	return
 
+#This function lets the player win, and attempts to gracefully close the game window.
+#I will probably fix this in the future, but now is a good time to be done with the project for now.
 def win():
-	print("You win!")
+	#We import the game window, and clear it.
+	#print("You win!")
 	global game_window
 	game_window.clearscreen()
+	#We import the root, then eliminate it.
 	root = tk.Tk()
 	root.withdraw()
+	#We then print the win to the player, then close the root and the turtle.
 	messagebox.showinfo("You win!", "Thank you for playing.")
 	root.destroy()
 	turtle.bye()
 	return
 
+#If the player loses, we gracefully close the window.
 def lose():
 	print("You lose...")
 	global game_window
@@ -119,20 +127,24 @@ def lose():
 	root.destroy()
 	turtle.bye()
 
+#This function asks the player their name at startup.
 def ask_player_name():
+	#We show the window, then hide it once the player enters their name.
     root = tk.Tk()
-    root.withdraw()  # Hide main tkinter window
+    root.withdraw()  
     name = simpledialog.askstring("Player Name", "Enter your name:")
     root.destroy()
-
+	#If the player does not enter their name, we default to Hero.
     if not name:
         return "Hero"
     return name
 
+#We set the text in the game to a default arial in bold.
 def text(local_text):
 	global update_turtle
 	update_turtle.write(local_text, font=("Arial", 16, "bold"))
 	turtle.update()
+	
 #Class for the hero object. Probably could be made as a subclass of a larger character class.
 class Hero:
 	def __init__(self, name, hp, mp, st, int, speed, lck, items):
